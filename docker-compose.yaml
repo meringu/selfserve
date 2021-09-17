@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:13
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+  # migrate:
+  #   build: .
+  #   command: migrate
+  #   environment:
+  #     SELFSERVE_SQL_DRIVER: postgres
+  #     SELFSERVE_SQL_DATA_SOURCE_NAME: host=db port=5432 user=postgres password=postgres dbname=postgres sslmode=disable
+  #   depends_on:
+  #     - db
+  # web:
+  #   build: .
+  #   command: server
+  #   environment:
+  #     SELFSERVE_SQL_DRIVER: postgres
+  #     SELFSERVE_SQL_DATA_SOURCE_NAME: host=db port=5432 user=postgres password=postgres dbname=postgres sslmode=disable
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     migrate:
+  #       condition: service_completed_successfully

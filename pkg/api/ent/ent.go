@@ -8,8 +8,12 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/meringu/selfserve/pkg/api/ent/group"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
+	"github.com/meringu/selfserve/pkg/api/ent/user"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -30,8 +34,12 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
+		group.Table:         group.ValidColumn,
+		installation.Table:  installation.ValidColumn,
 		module.Table:        module.ValidColumn,
 		moduleversion.Table: moduleversion.ValidColumn,
+		namespace.Table:     namespace.ValidColumn,
+		user.Table:          user.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

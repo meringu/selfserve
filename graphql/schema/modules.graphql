@@ -1,0 +1,51 @@
+type Module implements Node {
+  id: ID!
+  name: String!
+  description: String!
+  createdAt: Time
+  latestVersion: ModuleVersion
+  versions(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleVersionOrder
+    where: ModuleVersionWhereInput
+  ): ModuleVersionConnection! @goField(forceResolver: true)
+}
+
+type ModuleConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ModuleEdge]
+}
+
+type ModuleEdge {
+  node: Module
+  cursor: Cursor!
+}
+
+enum ModuleOrderField {
+  CREATED_AT
+  NAME
+}
+
+input ModuleOrder {
+  direction: OrderDirection!
+  field: ModuleOrderField
+}
+
+input CreateModule {
+  name: String!
+  description: String!
+}
+
+input UpdateModule {
+  id: ID!
+  name: String
+  description: String
+}
+
+input DeleteModule {
+  id: ID!
+}

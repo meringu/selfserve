@@ -1,0 +1,116 @@
+type Query {
+  node(id: ID!): Node
+
+  user: User!
+
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection!
+
+  installations(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: InstallationOrder
+    where: InstallationWhereInput
+  ): InstallationConnection!
+
+  modules(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleOrder
+    where: ModuleWhereInput
+  ): ModuleConnection!
+
+  moduleVersions(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleVersionOrder
+    where: ModuleVersionWhereInput
+  ): ModuleVersionConnection!
+
+  namespaces(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: NamespaceOrder
+    where: NamespaceWhereInput
+  ): NamespaceConnection!
+
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection!
+}
+
+type Mutation {
+  # Groups
+  createGroup(input: CreateGroup!): Group!
+  updateGroup(input: UpdateGroup!): Group!
+  deleteGroup(input: DeleteGroup!): ID!
+  # addUsersToGroup(input: AddUsersToGroup!): Group!
+  # removeUsersFromGroup(input: RemoveUsersFromGroup!): Group!
+  # setGroupParent(input: SetGroupParent!): Group!
+
+  # Installation
+  createInstallation(input: CreateInstallation!): Installation!
+  updateInstallation(input: UpdateInstallation!): Installation!
+  deleteInstallation(input: DeleteInstallation!): ID!
+
+  # Module
+  createModule(input: CreateModule!): Module!
+  updateModule(input: UpdateModule!): Module!
+  deleteModule(input: DeleteModule!): ID!
+
+  # ModuleVersion
+  createModuleVersion(input: CreateModuleVersion!): ModuleVersion!
+  updateModuleVersion(input: UpdateModuleVersion!): ModuleVersion!
+  deleteModuleVersion(input: DeleteModuleVersion!): ID!
+
+  # Namespace
+  createNamespace(input: CreateNamespace!): Namespace!
+  updateNamespace(input: UpdateNamespace!): Namespace!
+  deleteNamespace(input: DeleteNamespace!): ID!
+
+  # User
+  createUser(input: CreateUser!): User!
+  updateUser(input: UpdateUser!): User!
+  deleteUser(input: DeleteUser!): ID!
+}
+
+scalar Time
+scalar Cursor
+
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+  | FIELD_DEFINITION
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
+  endCursor: Cursor
+}
+
+enum OrderDirection {
+  ASC
+  DESC
+}

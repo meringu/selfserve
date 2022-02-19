@@ -8,18 +8,82 @@ import (
 )
 
 var (
+	// GroupsColumns holds the columns for the "groups" table.
+	GroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "group_children", Type: field.TypeInt, Nullable: true},
+	}
+	// GroupsTable holds the schema information for the "groups" table.
+	GroupsTable = &schema.Table{
+		Name:       "groups",
+		Columns:    GroupsColumns,
+		PrimaryKey: []*schema.Column{GroupsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "groups_groups_children",
+				Columns:    []*schema.Column{GroupsColumns[3]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "group_name",
+				Unique:  false,
+				Columns: []*schema.Column{GroupsColumns[1]},
+			},
+		},
+	}
+	// InstallationsColumns holds the columns for the "installations" table.
+	InstallationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "module_version_installations", Type: field.TypeInt, Nullable: true},
+		{Name: "namespace_installations", Type: field.TypeInt, Nullable: true},
+	}
+	// InstallationsTable holds the schema information for the "installations" table.
+	InstallationsTable = &schema.Table{
+		Name:       "installations",
+		Columns:    InstallationsColumns,
+		PrimaryKey: []*schema.Column{InstallationsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "installations_module_versions_installations",
+				Columns:    []*schema.Column{InstallationsColumns[2]},
+				RefColumns: []*schema.Column{ModuleVersionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "installations_namespaces_installations",
+				Columns:    []*schema.Column{InstallationsColumns[3]},
+				RefColumns: []*schema.Column{NamespacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ModulesColumns holds the columns for the "modules" table.
 	ModulesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "description", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
+		{Name: "namespace_modules", Type: field.TypeInt, Nullable: true},
 	}
 	// ModulesTable holds the schema information for the "modules" table.
 	ModulesTable = &schema.Table{
 		Name:       "modules",
 		Columns:    ModulesColumns,
 		PrimaryKey: []*schema.Column{ModulesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "modules_namespaces_modules",
+				Columns:    []*schema.Column{ModulesColumns[4]},
+				RefColumns: []*schema.Column{NamespacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "module_name",
@@ -31,8 +95,6 @@ var (
 	// ModuleVersionsColumns holds the columns for the "module_versions" table.
 	ModuleVersionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "version", Type: field.TypeString},
-		{Name: "source", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "module_versions", Type: field.TypeInt, Nullable: true},
 	}
@@ -44,26 +106,149 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "module_versions_modules_versions",
-				Columns:    []*schema.Column{ModuleVersionsColumns[4]},
+				Columns:    []*schema.Column{ModuleVersionsColumns[2]},
 				RefColumns: []*schema.Column{ModulesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
+	}
+	// NamespacesColumns holds the columns for the "namespaces" table.
+	NamespacesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// NamespacesTable holds the schema information for the "namespaces" table.
+	NamespacesTable = &schema.Table{
+		Name:       "namespaces",
+		Columns:    NamespacesColumns,
+		PrimaryKey: []*schema.Column{NamespacesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "moduleversion_version_module_versions",
-				Unique:  true,
-				Columns: []*schema.Column{ModuleVersionsColumns[1], ModuleVersionsColumns[4]},
+				Name:    "namespace_name",
+				Unique:  false,
+				Columns: []*schema.Column{NamespacesColumns[1]},
+			},
+		},
+	}
+	// UsersColumns holds the columns for the "users" table.
+	UsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+	}
+	// UsersTable holds the schema information for the "users" table.
+	UsersTable = &schema.Table{
+		Name:       "users",
+		Columns:    UsersColumns,
+		PrimaryKey: []*schema.Column{UsersColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "user_name",
+				Unique:  false,
+				Columns: []*schema.Column{UsersColumns[1]},
+			},
+		},
+	}
+	// GroupUsersColumns holds the columns for the "group_users" table.
+	GroupUsersColumns = []*schema.Column{
+		{Name: "group_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// GroupUsersTable holds the schema information for the "group_users" table.
+	GroupUsersTable = &schema.Table{
+		Name:       "group_users",
+		Columns:    GroupUsersColumns,
+		PrimaryKey: []*schema.Column{GroupUsersColumns[0], GroupUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "group_users_group_id",
+				Columns:    []*schema.Column{GroupUsersColumns[0]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "group_users_user_id",
+				Columns:    []*schema.Column{GroupUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// NamespaceGroupsColumns holds the columns for the "namespace_groups" table.
+	NamespaceGroupsColumns = []*schema.Column{
+		{Name: "namespace_id", Type: field.TypeInt},
+		{Name: "group_id", Type: field.TypeInt},
+	}
+	// NamespaceGroupsTable holds the schema information for the "namespace_groups" table.
+	NamespaceGroupsTable = &schema.Table{
+		Name:       "namespace_groups",
+		Columns:    NamespaceGroupsColumns,
+		PrimaryKey: []*schema.Column{NamespaceGroupsColumns[0], NamespaceGroupsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "namespace_groups_namespace_id",
+				Columns:    []*schema.Column{NamespaceGroupsColumns[0]},
+				RefColumns: []*schema.Column{NamespacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "namespace_groups_group_id",
+				Columns:    []*schema.Column{NamespaceGroupsColumns[1]},
+				RefColumns: []*schema.Column{GroupsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// NamespaceUsersColumns holds the columns for the "namespace_users" table.
+	NamespaceUsersColumns = []*schema.Column{
+		{Name: "namespace_id", Type: field.TypeInt},
+		{Name: "user_id", Type: field.TypeInt},
+	}
+	// NamespaceUsersTable holds the schema information for the "namespace_users" table.
+	NamespaceUsersTable = &schema.Table{
+		Name:       "namespace_users",
+		Columns:    NamespaceUsersColumns,
+		PrimaryKey: []*schema.Column{NamespaceUsersColumns[0], NamespaceUsersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "namespace_users_namespace_id",
+				Columns:    []*schema.Column{NamespaceUsersColumns[0]},
+				RefColumns: []*schema.Column{NamespacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "namespace_users_user_id",
+				Columns:    []*schema.Column{NamespaceUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
 			},
 		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		GroupsTable,
+		InstallationsTable,
 		ModulesTable,
 		ModuleVersionsTable,
+		NamespacesTable,
+		UsersTable,
+		GroupUsersTable,
+		NamespaceGroupsTable,
+		NamespaceUsersTable,
 	}
 )
 
 func init() {
+	GroupsTable.ForeignKeys[0].RefTable = GroupsTable
+	InstallationsTable.ForeignKeys[0].RefTable = ModuleVersionsTable
+	InstallationsTable.ForeignKeys[1].RefTable = NamespacesTable
+	ModulesTable.ForeignKeys[0].RefTable = NamespacesTable
 	ModuleVersionsTable.ForeignKeys[0].RefTable = ModulesTable
+	GroupUsersTable.ForeignKeys[0].RefTable = GroupsTable
+	GroupUsersTable.ForeignKeys[1].RefTable = UsersTable
+	NamespaceGroupsTable.ForeignKeys[0].RefTable = NamespacesTable
+	NamespaceGroupsTable.ForeignKeys[1].RefTable = GroupsTable
+	NamespaceUsersTable.ForeignKeys[0].RefTable = NamespacesTable
+	NamespaceUsersTable.ForeignKeys[1].RefTable = UsersTable
 }

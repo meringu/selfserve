@@ -57,6 +57,14 @@ var serverCmd = &cobra.Command{
 		router := mux.NewRouter()
 		router.Use(handlers.LoggingMiddleware(log.WithName("http")))
 
+		// Introduce a response delay for simulating latency
+		router.Use(func(next http.Handler) http.Handler {
+			return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				time.Sleep(time.Millisecond * 500)
+				next.ServeHTTP(w, r)
+			})
+		})
+
 		router.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("PONG")) })
 		router.Handle("/query", handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: graph.NewResolver(db)})))
 		router.Handle("/graphql", playground.Handler("GraphQL playground", "/query"))

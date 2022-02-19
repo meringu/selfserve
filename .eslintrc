@@ -1,0 +1,35 @@
+---
+env:
+  browser: true
+  es2021: true
+  node: true
+
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 12
+  sourceType: module
+
+extends:
+  - eslint:recommended
+  - plugin:promise/recommended
+  - plugin:react/recommended
+
+plugins:
+  - promise
+  - react
+  - simple-import-sort
+
+settings:
+  react:
+    version: detect
+
+rules:
+  comma-dangle: [error, always-multiline]
+  eol-last: [error, always]
+  indent: [error, 2]
+  quotes: [error, single]
+  semi: [error, never]
+
+  simple-import-sort/exports: error
+  simple-import-sort/imports: error

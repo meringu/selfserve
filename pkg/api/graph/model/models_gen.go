@@ -2,15 +2,43 @@
 
 package model
 
+type AddUserToGroup struct {
+	GroupID int `json:"groupId"`
+	UserID  int `json:"userId"`
+}
+
+type CreateGroup struct {
+	Name string `json:"name"`
+}
+
+type CreateInstallation struct {
+	ModuleVersionID int `json:"moduleVersionId"`
+}
+
 type CreateModule struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
 
 type CreateModuleVersion struct {
-	Module  int    `json:"module"`
+	ID      int    `json:"id"`
 	Version string `json:"version"`
-	Source  string `json:"source"`
+}
+
+type CreateNamespace struct {
+	Name string `json:"name"`
+}
+
+type CreateUser struct {
+	Name string `json:"name"`
+}
+
+type DeleteGroup struct {
+	ID int `json:"id"`
+}
+
+type DeleteInstallation struct {
+	ID int `json:"id"`
 }
 
 type DeleteModule struct {
@@ -21,6 +49,25 @@ type DeleteModuleVersion struct {
 	ID int `json:"id"`
 }
 
+type DeleteNamespace struct {
+	ID int `json:"id"`
+}
+
+type DeleteUser struct {
+	ID int `json:"id"`
+}
+
+type UpdateGroup struct {
+	ID     int     `json:"id"`
+	Name   *string `json:"name"`
+	Parent *int    `json:"parent"`
+	Users  []*int  `json:"users"`
+}
+
+type UpdateInstallation struct {
+	ID int `json:"id"`
+}
+
 type UpdateModule struct {
 	ID          int     `json:"id"`
 	Name        *string `json:"name"`
@@ -28,7 +75,15 @@ type UpdateModule struct {
 }
 
 type UpdateModuleVersion struct {
-	ID      int     `json:"id"`
-	Version *string `json:"version"`
-	Source  *string `json:"source"`
+	ID int `json:"id"`
+}
+
+type UpdateNamespace struct {
+	ID   int     `json:"id"`
+	Name *string `json:"name"`
+}
+
+type UpdateUser struct {
+	ID   int     `json:"id"`
+	Name *string `json:"name"`
 }

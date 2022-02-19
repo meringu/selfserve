@@ -1,0 +1,55 @@
+type User implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+  resolvedGroups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+}
+
+type UserConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [UserEdge]
+}
+
+type UserEdge {
+  node: User
+  cursor: Cursor!
+}
+
+enum UserOrderField {
+  CREATED_AT
+  NAME
+}
+
+input UserOrder {
+  direction: OrderDirection!
+  field: UserOrderField
+}
+
+input CreateUser {
+  name: String!
+}
+
+input UpdateUser {
+  id: ID!
+  name: String
+}
+
+input DeleteUser {
+  id: ID!
+}

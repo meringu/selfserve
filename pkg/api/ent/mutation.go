@@ -8,9 +8,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/meringu/selfserve/pkg/api/ent/group"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
+	"github.com/meringu/selfserve/pkg/api/ent/user"
 
 	"entgo.io/ent"
 )
@@ -24,26 +28,1057 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeGroup         = "Group"
+	TypeInstallation  = "Installation"
 	TypeModule        = "Module"
 	TypeModuleVersion = "ModuleVersion"
+	TypeNamespace     = "Namespace"
+	TypeUser          = "User"
 )
+
+// GroupMutation represents an operation that mutates the Group nodes in the graph.
+type GroupMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	name              *string
+	created_at        *time.Time
+	clearedFields     map[string]struct{}
+	users             map[int]struct{}
+	removedusers      map[int]struct{}
+	clearedusers      bool
+	parent            *int
+	clearedparent     bool
+	children          map[int]struct{}
+	removedchildren   map[int]struct{}
+	clearedchildren   bool
+	namespaces        map[int]struct{}
+	removednamespaces map[int]struct{}
+	clearednamespaces bool
+	done              bool
+	oldValue          func(context.Context) (*Group, error)
+	predicates        []predicate.Group
+}
+
+var _ ent.Mutation = (*GroupMutation)(nil)
+
+// groupOption allows management of the mutation configuration using functional options.
+type groupOption func(*GroupMutation)
+
+// newGroupMutation creates new mutation for the Group entity.
+func newGroupMutation(c config, op Op, opts ...groupOption) *GroupMutation {
+	m := &GroupMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeGroup,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withGroupID sets the ID field of the mutation.
+func withGroupID(id int) groupOption {
+	return func(m *GroupMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Group
+		)
+		m.oldValue = func(ctx context.Context) (*Group, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Group.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withGroup sets the old Group of the mutation.
+func withGroup(node *Group) groupOption {
+	return func(m *GroupMutation) {
+		m.oldValue = func(context.Context) (*Group, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m GroupMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m GroupMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *GroupMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *GroupMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *GroupMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *GroupMutation) ResetName() {
+	m.name = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *GroupMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *GroupMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Group entity.
+// If the Group object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GroupMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *GroupMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// AddUserIDs adds the "users" edge to the User entity by ids.
+func (m *GroupMutation) AddUserIDs(ids ...int) {
+	if m.users == nil {
+		m.users = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.users[ids[i]] = struct{}{}
+	}
+}
+
+// ClearUsers clears the "users" edge to the User entity.
+func (m *GroupMutation) ClearUsers() {
+	m.clearedusers = true
+}
+
+// UsersCleared reports if the "users" edge to the User entity was cleared.
+func (m *GroupMutation) UsersCleared() bool {
+	return m.clearedusers
+}
+
+// RemoveUserIDs removes the "users" edge to the User entity by IDs.
+func (m *GroupMutation) RemoveUserIDs(ids ...int) {
+	if m.removedusers == nil {
+		m.removedusers = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.users, ids[i])
+		m.removedusers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
+func (m *GroupMutation) RemovedUsersIDs() (ids []int) {
+	for id := range m.removedusers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// UsersIDs returns the "users" edge IDs in the mutation.
+func (m *GroupMutation) UsersIDs() (ids []int) {
+	for id := range m.users {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetUsers resets all changes to the "users" edge.
+func (m *GroupMutation) ResetUsers() {
+	m.users = nil
+	m.clearedusers = false
+	m.removedusers = nil
+}
+
+// SetParentID sets the "parent" edge to the Group entity by id.
+func (m *GroupMutation) SetParentID(id int) {
+	m.parent = &id
+}
+
+// ClearParent clears the "parent" edge to the Group entity.
+func (m *GroupMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the Group entity was cleared.
+func (m *GroupMutation) ParentCleared() bool {
+	return m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *GroupMutation) ParentID() (id int, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *GroupMutation) ParentIDs() (ids []int) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *GroupMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddChildIDs adds the "children" edge to the Group entity by ids.
+func (m *GroupMutation) AddChildIDs(ids ...int) {
+	if m.children == nil {
+		m.children = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the Group entity.
+func (m *GroupMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the Group entity was cleared.
+func (m *GroupMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the Group entity by IDs.
+func (m *GroupMutation) RemoveChildIDs(ids ...int) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the Group entity.
+func (m *GroupMutation) RemovedChildrenIDs() (ids []int) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *GroupMutation) ChildrenIDs() (ids []int) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *GroupMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
+// AddNamespaceIDs adds the "namespaces" edge to the Namespace entity by ids.
+func (m *GroupMutation) AddNamespaceIDs(ids ...int) {
+	if m.namespaces == nil {
+		m.namespaces = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.namespaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNamespaces clears the "namespaces" edge to the Namespace entity.
+func (m *GroupMutation) ClearNamespaces() {
+	m.clearednamespaces = true
+}
+
+// NamespacesCleared reports if the "namespaces" edge to the Namespace entity was cleared.
+func (m *GroupMutation) NamespacesCleared() bool {
+	return m.clearednamespaces
+}
+
+// RemoveNamespaceIDs removes the "namespaces" edge to the Namespace entity by IDs.
+func (m *GroupMutation) RemoveNamespaceIDs(ids ...int) {
+	if m.removednamespaces == nil {
+		m.removednamespaces = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.namespaces, ids[i])
+		m.removednamespaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNamespaces returns the removed IDs of the "namespaces" edge to the Namespace entity.
+func (m *GroupMutation) RemovedNamespacesIDs() (ids []int) {
+	for id := range m.removednamespaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NamespacesIDs returns the "namespaces" edge IDs in the mutation.
+func (m *GroupMutation) NamespacesIDs() (ids []int) {
+	for id := range m.namespaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNamespaces resets all changes to the "namespaces" edge.
+func (m *GroupMutation) ResetNamespaces() {
+	m.namespaces = nil
+	m.clearednamespaces = false
+	m.removednamespaces = nil
+}
+
+// Where appends a list predicates to the GroupMutation builder.
+func (m *GroupMutation) Where(ps ...predicate.Group) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *GroupMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Group).
+func (m *GroupMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *GroupMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.name != nil {
+		fields = append(fields, group.FieldName)
+	}
+	if m.created_at != nil {
+		fields = append(fields, group.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *GroupMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case group.FieldName:
+		return m.Name()
+	case group.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *GroupMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case group.FieldName:
+		return m.OldName(ctx)
+	case group.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Group field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GroupMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case group.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case group.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Group field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *GroupMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *GroupMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *GroupMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Group numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *GroupMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *GroupMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *GroupMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Group nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *GroupMutation) ResetField(name string) error {
+	switch name {
+	case group.FieldName:
+		m.ResetName()
+		return nil
+	case group.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Group field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *GroupMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.users != nil {
+		edges = append(edges, group.EdgeUsers)
+	}
+	if m.parent != nil {
+		edges = append(edges, group.EdgeParent)
+	}
+	if m.children != nil {
+		edges = append(edges, group.EdgeChildren)
+	}
+	if m.namespaces != nil {
+		edges = append(edges, group.EdgeNamespaces)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *GroupMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case group.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.users))
+		for id := range m.users {
+			ids = append(ids, id)
+		}
+		return ids
+	case group.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case group.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
+	case group.EdgeNamespaces:
+		ids := make([]ent.Value, 0, len(m.namespaces))
+		for id := range m.namespaces {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *GroupMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.removedusers != nil {
+		edges = append(edges, group.EdgeUsers)
+	}
+	if m.removedchildren != nil {
+		edges = append(edges, group.EdgeChildren)
+	}
+	if m.removednamespaces != nil {
+		edges = append(edges, group.EdgeNamespaces)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *GroupMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case group.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.removedusers))
+		for id := range m.removedusers {
+			ids = append(ids, id)
+		}
+		return ids
+	case group.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
+	case group.EdgeNamespaces:
+		ids := make([]ent.Value, 0, len(m.removednamespaces))
+		for id := range m.removednamespaces {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *GroupMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedusers {
+		edges = append(edges, group.EdgeUsers)
+	}
+	if m.clearedparent {
+		edges = append(edges, group.EdgeParent)
+	}
+	if m.clearedchildren {
+		edges = append(edges, group.EdgeChildren)
+	}
+	if m.clearednamespaces {
+		edges = append(edges, group.EdgeNamespaces)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *GroupMutation) EdgeCleared(name string) bool {
+	switch name {
+	case group.EdgeUsers:
+		return m.clearedusers
+	case group.EdgeParent:
+		return m.clearedparent
+	case group.EdgeChildren:
+		return m.clearedchildren
+	case group.EdgeNamespaces:
+		return m.clearednamespaces
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *GroupMutation) ClearEdge(name string) error {
+	switch name {
+	case group.EdgeParent:
+		m.ClearParent()
+		return nil
+	}
+	return fmt.Errorf("unknown Group unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *GroupMutation) ResetEdge(name string) error {
+	switch name {
+	case group.EdgeUsers:
+		m.ResetUsers()
+		return nil
+	case group.EdgeParent:
+		m.ResetParent()
+		return nil
+	case group.EdgeChildren:
+		m.ResetChildren()
+		return nil
+	case group.EdgeNamespaces:
+		m.ResetNamespaces()
+		return nil
+	}
+	return fmt.Errorf("unknown Group edge %s", name)
+}
+
+// InstallationMutation represents an operation that mutates the Installation nodes in the graph.
+type InstallationMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int
+	created_at           *time.Time
+	clearedFields        map[string]struct{}
+	moduleVersion        *int
+	clearedmoduleVersion bool
+	done                 bool
+	oldValue             func(context.Context) (*Installation, error)
+	predicates           []predicate.Installation
+}
+
+var _ ent.Mutation = (*InstallationMutation)(nil)
+
+// installationOption allows management of the mutation configuration using functional options.
+type installationOption func(*InstallationMutation)
+
+// newInstallationMutation creates new mutation for the Installation entity.
+func newInstallationMutation(c config, op Op, opts ...installationOption) *InstallationMutation {
+	m := &InstallationMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeInstallation,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withInstallationID sets the ID field of the mutation.
+func withInstallationID(id int) installationOption {
+	return func(m *InstallationMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Installation
+		)
+		m.oldValue = func(ctx context.Context) (*Installation, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Installation.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withInstallation sets the old Installation of the mutation.
+func withInstallation(node *Installation) installationOption {
+	return func(m *InstallationMutation) {
+		m.oldValue = func(context.Context) (*Installation, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m InstallationMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m InstallationMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *InstallationMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *InstallationMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *InstallationMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Installation entity.
+// If the Installation object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InstallationMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *InstallationMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetModuleVersionID sets the "moduleVersion" edge to the ModuleVersion entity by id.
+func (m *InstallationMutation) SetModuleVersionID(id int) {
+	m.moduleVersion = &id
+}
+
+// ClearModuleVersion clears the "moduleVersion" edge to the ModuleVersion entity.
+func (m *InstallationMutation) ClearModuleVersion() {
+	m.clearedmoduleVersion = true
+}
+
+// ModuleVersionCleared reports if the "moduleVersion" edge to the ModuleVersion entity was cleared.
+func (m *InstallationMutation) ModuleVersionCleared() bool {
+	return m.clearedmoduleVersion
+}
+
+// ModuleVersionID returns the "moduleVersion" edge ID in the mutation.
+func (m *InstallationMutation) ModuleVersionID() (id int, exists bool) {
+	if m.moduleVersion != nil {
+		return *m.moduleVersion, true
+	}
+	return
+}
+
+// ModuleVersionIDs returns the "moduleVersion" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ModuleVersionID instead. It exists only for internal usage by the builders.
+func (m *InstallationMutation) ModuleVersionIDs() (ids []int) {
+	if id := m.moduleVersion; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetModuleVersion resets all changes to the "moduleVersion" edge.
+func (m *InstallationMutation) ResetModuleVersion() {
+	m.moduleVersion = nil
+	m.clearedmoduleVersion = false
+}
+
+// Where appends a list predicates to the InstallationMutation builder.
+func (m *InstallationMutation) Where(ps ...predicate.Installation) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *InstallationMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Installation).
+func (m *InstallationMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *InstallationMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.created_at != nil {
+		fields = append(fields, installation.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *InstallationMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case installation.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *InstallationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case installation.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Installation field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *InstallationMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case installation.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Installation field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *InstallationMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *InstallationMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *InstallationMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Installation numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *InstallationMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *InstallationMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *InstallationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Installation nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *InstallationMutation) ResetField(name string) error {
+	switch name {
+	case installation.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Installation field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *InstallationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.moduleVersion != nil {
+		edges = append(edges, installation.EdgeModuleVersion)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *InstallationMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case installation.EdgeModuleVersion:
+		if id := m.moduleVersion; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *InstallationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *InstallationMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *InstallationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedmoduleVersion {
+		edges = append(edges, installation.EdgeModuleVersion)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *InstallationMutation) EdgeCleared(name string) bool {
+	switch name {
+	case installation.EdgeModuleVersion:
+		return m.clearedmoduleVersion
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *InstallationMutation) ClearEdge(name string) error {
+	switch name {
+	case installation.EdgeModuleVersion:
+		m.ClearModuleVersion()
+		return nil
+	}
+	return fmt.Errorf("unknown Installation unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *InstallationMutation) ResetEdge(name string) error {
+	switch name {
+	case installation.EdgeModuleVersion:
+		m.ResetModuleVersion()
+		return nil
+	}
+	return fmt.Errorf("unknown Installation edge %s", name)
+}
 
 // ModuleMutation represents an operation that mutates the Module nodes in the graph.
 type ModuleMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	name            *string
-	description     *string
-	created_at      *time.Time
-	clearedFields   map[string]struct{}
-	versions        map[int]struct{}
-	removedversions map[int]struct{}
-	clearedversions bool
-	done            bool
-	oldValue        func(context.Context) (*Module, error)
-	predicates      []predicate.Module
+	op               Op
+	typ              string
+	id               *int
+	name             *string
+	description      *string
+	created_at       *time.Time
+	clearedFields    map[string]struct{}
+	namespace        *int
+	clearednamespace bool
+	versions         map[int]struct{}
+	removedversions  map[int]struct{}
+	clearedversions  bool
+	done             bool
+	oldValue         func(context.Context) (*Module, error)
+	predicates       []predicate.Module
 }
 
 var _ ent.Mutation = (*ModuleMutation)(nil)
@@ -231,6 +1266,45 @@ func (m *ModuleMutation) OldCreatedAt(ctx context.Context) (v time.Time, err err
 // ResetCreatedAt resets all changes to the "created_at" field.
 func (m *ModuleMutation) ResetCreatedAt() {
 	m.created_at = nil
+}
+
+// SetNamespaceID sets the "namespace" edge to the Namespace entity by id.
+func (m *ModuleMutation) SetNamespaceID(id int) {
+	m.namespace = &id
+}
+
+// ClearNamespace clears the "namespace" edge to the Namespace entity.
+func (m *ModuleMutation) ClearNamespace() {
+	m.clearednamespace = true
+}
+
+// NamespaceCleared reports if the "namespace" edge to the Namespace entity was cleared.
+func (m *ModuleMutation) NamespaceCleared() bool {
+	return m.clearednamespace
+}
+
+// NamespaceID returns the "namespace" edge ID in the mutation.
+func (m *ModuleMutation) NamespaceID() (id int, exists bool) {
+	if m.namespace != nil {
+		return *m.namespace, true
+	}
+	return
+}
+
+// NamespaceIDs returns the "namespace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// NamespaceID instead. It exists only for internal usage by the builders.
+func (m *ModuleMutation) NamespaceIDs() (ids []int) {
+	if id := m.namespace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetNamespace resets all changes to the "namespace" edge.
+func (m *ModuleMutation) ResetNamespace() {
+	m.namespace = nil
+	m.clearednamespace = false
 }
 
 // AddVersionIDs adds the "versions" edge to the ModuleVersion entity by ids.
@@ -439,7 +1513,10 @@ func (m *ModuleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ModuleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.namespace != nil {
+		edges = append(edges, module.EdgeNamespace)
+	}
 	if m.versions != nil {
 		edges = append(edges, module.EdgeVersions)
 	}
@@ -450,6 +1527,10 @@ func (m *ModuleMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ModuleMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case module.EdgeNamespace:
+		if id := m.namespace; id != nil {
+			return []ent.Value{*id}
+		}
 	case module.EdgeVersions:
 		ids := make([]ent.Value, 0, len(m.versions))
 		for id := range m.versions {
@@ -462,7 +1543,7 @@ func (m *ModuleMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ModuleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedversions != nil {
 		edges = append(edges, module.EdgeVersions)
 	}
@@ -485,7 +1566,10 @@ func (m *ModuleMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ModuleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearednamespace {
+		edges = append(edges, module.EdgeNamespace)
+	}
 	if m.clearedversions {
 		edges = append(edges, module.EdgeVersions)
 	}
@@ -496,6 +1580,8 @@ func (m *ModuleMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ModuleMutation) EdgeCleared(name string) bool {
 	switch name {
+	case module.EdgeNamespace:
+		return m.clearednamespace
 	case module.EdgeVersions:
 		return m.clearedversions
 	}
@@ -506,6 +1592,9 @@ func (m *ModuleMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ModuleMutation) ClearEdge(name string) error {
 	switch name {
+	case module.EdgeNamespace:
+		m.ClearNamespace()
+		return nil
 	}
 	return fmt.Errorf("unknown Module unique edge %s", name)
 }
@@ -514,6 +1603,9 @@ func (m *ModuleMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ModuleMutation) ResetEdge(name string) error {
 	switch name {
+	case module.EdgeNamespace:
+		m.ResetNamespace()
+		return nil
 	case module.EdgeVersions:
 		m.ResetVersions()
 		return nil
@@ -524,18 +1616,19 @@ func (m *ModuleMutation) ResetEdge(name string) error {
 // ModuleVersionMutation represents an operation that mutates the ModuleVersion nodes in the graph.
 type ModuleVersionMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	version       *string
-	source        *string
-	created_at    *time.Time
-	clearedFields map[string]struct{}
-	module        *int
-	clearedmodule bool
-	done          bool
-	oldValue      func(context.Context) (*ModuleVersion, error)
-	predicates    []predicate.ModuleVersion
+	op                   Op
+	typ                  string
+	id                   *int
+	created_at           *time.Time
+	clearedFields        map[string]struct{}
+	module               *int
+	clearedmodule        bool
+	installations        map[int]struct{}
+	removedinstallations map[int]struct{}
+	clearedinstallations bool
+	done                 bool
+	oldValue             func(context.Context) (*ModuleVersion, error)
+	predicates           []predicate.ModuleVersion
 }
 
 var _ ent.Mutation = (*ModuleVersionMutation)(nil)
@@ -617,78 +1710,6 @@ func (m *ModuleVersionMutation) ID() (id int, exists bool) {
 	return *m.id, true
 }
 
-// SetVersion sets the "version" field.
-func (m *ModuleVersionMutation) SetVersion(s string) {
-	m.version = &s
-}
-
-// Version returns the value of the "version" field in the mutation.
-func (m *ModuleVersionMutation) Version() (r string, exists bool) {
-	v := m.version
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldVersion returns the old "version" field's value of the ModuleVersion entity.
-// If the ModuleVersion object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ModuleVersionMutation) OldVersion(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldVersion is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldVersion requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
-	}
-	return oldValue.Version, nil
-}
-
-// ResetVersion resets all changes to the "version" field.
-func (m *ModuleVersionMutation) ResetVersion() {
-	m.version = nil
-}
-
-// SetSource sets the "source" field.
-func (m *ModuleVersionMutation) SetSource(s string) {
-	m.source = &s
-}
-
-// Source returns the value of the "source" field in the mutation.
-func (m *ModuleVersionMutation) Source() (r string, exists bool) {
-	v := m.source
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSource returns the old "source" field's value of the ModuleVersion entity.
-// If the ModuleVersion object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ModuleVersionMutation) OldSource(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldSource is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldSource requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSource: %w", err)
-	}
-	return oldValue.Source, nil
-}
-
-// ResetSource resets all changes to the "source" field.
-func (m *ModuleVersionMutation) ResetSource() {
-	m.source = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *ModuleVersionMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -764,6 +1785,60 @@ func (m *ModuleVersionMutation) ResetModule() {
 	m.clearedmodule = false
 }
 
+// AddInstallationIDs adds the "installations" edge to the Installation entity by ids.
+func (m *ModuleVersionMutation) AddInstallationIDs(ids ...int) {
+	if m.installations == nil {
+		m.installations = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.installations[ids[i]] = struct{}{}
+	}
+}
+
+// ClearInstallations clears the "installations" edge to the Installation entity.
+func (m *ModuleVersionMutation) ClearInstallations() {
+	m.clearedinstallations = true
+}
+
+// InstallationsCleared reports if the "installations" edge to the Installation entity was cleared.
+func (m *ModuleVersionMutation) InstallationsCleared() bool {
+	return m.clearedinstallations
+}
+
+// RemoveInstallationIDs removes the "installations" edge to the Installation entity by IDs.
+func (m *ModuleVersionMutation) RemoveInstallationIDs(ids ...int) {
+	if m.removedinstallations == nil {
+		m.removedinstallations = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.installations, ids[i])
+		m.removedinstallations[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedInstallations returns the removed IDs of the "installations" edge to the Installation entity.
+func (m *ModuleVersionMutation) RemovedInstallationsIDs() (ids []int) {
+	for id := range m.removedinstallations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// InstallationsIDs returns the "installations" edge IDs in the mutation.
+func (m *ModuleVersionMutation) InstallationsIDs() (ids []int) {
+	for id := range m.installations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetInstallations resets all changes to the "installations" edge.
+func (m *ModuleVersionMutation) ResetInstallations() {
+	m.installations = nil
+	m.clearedinstallations = false
+	m.removedinstallations = nil
+}
+
 // Where appends a list predicates to the ModuleVersionMutation builder.
 func (m *ModuleVersionMutation) Where(ps ...predicate.ModuleVersion) {
 	m.predicates = append(m.predicates, ps...)
@@ -783,13 +1858,7 @@ func (m *ModuleVersionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ModuleVersionMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.version != nil {
-		fields = append(fields, moduleversion.FieldVersion)
-	}
-	if m.source != nil {
-		fields = append(fields, moduleversion.FieldSource)
-	}
+	fields := make([]string, 0, 1)
 	if m.created_at != nil {
 		fields = append(fields, moduleversion.FieldCreatedAt)
 	}
@@ -801,10 +1870,6 @@ func (m *ModuleVersionMutation) Fields() []string {
 // schema.
 func (m *ModuleVersionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case moduleversion.FieldVersion:
-		return m.Version()
-	case moduleversion.FieldSource:
-		return m.Source()
 	case moduleversion.FieldCreatedAt:
 		return m.CreatedAt()
 	}
@@ -816,10 +1881,6 @@ func (m *ModuleVersionMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ModuleVersionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case moduleversion.FieldVersion:
-		return m.OldVersion(ctx)
-	case moduleversion.FieldSource:
-		return m.OldSource(ctx)
 	case moduleversion.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	}
@@ -831,20 +1892,6 @@ func (m *ModuleVersionMutation) OldField(ctx context.Context, name string) (ent.
 // type.
 func (m *ModuleVersionMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case moduleversion.FieldVersion:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetVersion(v)
-		return nil
-	case moduleversion.FieldSource:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSource(v)
-		return nil
 	case moduleversion.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -901,12 +1948,6 @@ func (m *ModuleVersionMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ModuleVersionMutation) ResetField(name string) error {
 	switch name {
-	case moduleversion.FieldVersion:
-		m.ResetVersion()
-		return nil
-	case moduleversion.FieldSource:
-		m.ResetSource()
-		return nil
 	case moduleversion.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -916,9 +1957,12 @@ func (m *ModuleVersionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ModuleVersionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.module != nil {
 		edges = append(edges, moduleversion.EdgeModule)
+	}
+	if m.installations != nil {
+		edges = append(edges, moduleversion.EdgeInstallations)
 	}
 	return edges
 }
@@ -931,13 +1975,22 @@ func (m *ModuleVersionMutation) AddedIDs(name string) []ent.Value {
 		if id := m.module; id != nil {
 			return []ent.Value{*id}
 		}
+	case moduleversion.EdgeInstallations:
+		ids := make([]ent.Value, 0, len(m.installations))
+		for id := range m.installations {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ModuleVersionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedinstallations != nil {
+		edges = append(edges, moduleversion.EdgeInstallations)
+	}
 	return edges
 }
 
@@ -945,15 +1998,24 @@ func (m *ModuleVersionMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ModuleVersionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case moduleversion.EdgeInstallations:
+		ids := make([]ent.Value, 0, len(m.removedinstallations))
+		for id := range m.removedinstallations {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ModuleVersionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedmodule {
 		edges = append(edges, moduleversion.EdgeModule)
+	}
+	if m.clearedinstallations {
+		edges = append(edges, moduleversion.EdgeInstallations)
 	}
 	return edges
 }
@@ -964,6 +2026,8 @@ func (m *ModuleVersionMutation) EdgeCleared(name string) bool {
 	switch name {
 	case moduleversion.EdgeModule:
 		return m.clearedmodule
+	case moduleversion.EdgeInstallations:
+		return m.clearedinstallations
 	}
 	return false
 }
@@ -986,6 +2050,1219 @@ func (m *ModuleVersionMutation) ResetEdge(name string) error {
 	case moduleversion.EdgeModule:
 		m.ResetModule()
 		return nil
+	case moduleversion.EdgeInstallations:
+		m.ResetInstallations()
+		return nil
 	}
 	return fmt.Errorf("unknown ModuleVersion edge %s", name)
+}
+
+// NamespaceMutation represents an operation that mutates the Namespace nodes in the graph.
+type NamespaceMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *int
+	name                 *string
+	created_at           *time.Time
+	clearedFields        map[string]struct{}
+	groups               map[int]struct{}
+	removedgroups        map[int]struct{}
+	clearedgroups        bool
+	users                map[int]struct{}
+	removedusers         map[int]struct{}
+	clearedusers         bool
+	modules              map[int]struct{}
+	removedmodules       map[int]struct{}
+	clearedmodules       bool
+	installations        map[int]struct{}
+	removedinstallations map[int]struct{}
+	clearedinstallations bool
+	done                 bool
+	oldValue             func(context.Context) (*Namespace, error)
+	predicates           []predicate.Namespace
+}
+
+var _ ent.Mutation = (*NamespaceMutation)(nil)
+
+// namespaceOption allows management of the mutation configuration using functional options.
+type namespaceOption func(*NamespaceMutation)
+
+// newNamespaceMutation creates new mutation for the Namespace entity.
+func newNamespaceMutation(c config, op Op, opts ...namespaceOption) *NamespaceMutation {
+	m := &NamespaceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeNamespace,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withNamespaceID sets the ID field of the mutation.
+func withNamespaceID(id int) namespaceOption {
+	return func(m *NamespaceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Namespace
+		)
+		m.oldValue = func(ctx context.Context) (*Namespace, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Namespace.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withNamespace sets the old Namespace of the mutation.
+func withNamespace(node *Namespace) namespaceOption {
+	return func(m *NamespaceMutation) {
+		m.oldValue = func(context.Context) (*Namespace, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m NamespaceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m NamespaceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *NamespaceMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *NamespaceMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *NamespaceMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Namespace entity.
+// If the Namespace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NamespaceMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *NamespaceMutation) ResetName() {
+	m.name = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *NamespaceMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *NamespaceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Namespace entity.
+// If the Namespace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NamespaceMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *NamespaceMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// AddGroupIDs adds the "groups" edge to the Group entity by ids.
+func (m *NamespaceMutation) AddGroupIDs(ids ...int) {
+	if m.groups == nil {
+		m.groups = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.groups[ids[i]] = struct{}{}
+	}
+}
+
+// ClearGroups clears the "groups" edge to the Group entity.
+func (m *NamespaceMutation) ClearGroups() {
+	m.clearedgroups = true
+}
+
+// GroupsCleared reports if the "groups" edge to the Group entity was cleared.
+func (m *NamespaceMutation) GroupsCleared() bool {
+	return m.clearedgroups
+}
+
+// RemoveGroupIDs removes the "groups" edge to the Group entity by IDs.
+func (m *NamespaceMutation) RemoveGroupIDs(ids ...int) {
+	if m.removedgroups == nil {
+		m.removedgroups = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.groups, ids[i])
+		m.removedgroups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedGroups returns the removed IDs of the "groups" edge to the Group entity.
+func (m *NamespaceMutation) RemovedGroupsIDs() (ids []int) {
+	for id := range m.removedgroups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// GroupsIDs returns the "groups" edge IDs in the mutation.
+func (m *NamespaceMutation) GroupsIDs() (ids []int) {
+	for id := range m.groups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetGroups resets all changes to the "groups" edge.
+func (m *NamespaceMutation) ResetGroups() {
+	m.groups = nil
+	m.clearedgroups = false
+	m.removedgroups = nil
+}
+
+// AddUserIDs adds the "users" edge to the User entity by ids.
+func (m *NamespaceMutation) AddUserIDs(ids ...int) {
+	if m.users == nil {
+		m.users = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.users[ids[i]] = struct{}{}
+	}
+}
+
+// ClearUsers clears the "users" edge to the User entity.
+func (m *NamespaceMutation) ClearUsers() {
+	m.clearedusers = true
+}
+
+// UsersCleared reports if the "users" edge to the User entity was cleared.
+func (m *NamespaceMutation) UsersCleared() bool {
+	return m.clearedusers
+}
+
+// RemoveUserIDs removes the "users" edge to the User entity by IDs.
+func (m *NamespaceMutation) RemoveUserIDs(ids ...int) {
+	if m.removedusers == nil {
+		m.removedusers = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.users, ids[i])
+		m.removedusers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
+func (m *NamespaceMutation) RemovedUsersIDs() (ids []int) {
+	for id := range m.removedusers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// UsersIDs returns the "users" edge IDs in the mutation.
+func (m *NamespaceMutation) UsersIDs() (ids []int) {
+	for id := range m.users {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetUsers resets all changes to the "users" edge.
+func (m *NamespaceMutation) ResetUsers() {
+	m.users = nil
+	m.clearedusers = false
+	m.removedusers = nil
+}
+
+// AddModuleIDs adds the "modules" edge to the Module entity by ids.
+func (m *NamespaceMutation) AddModuleIDs(ids ...int) {
+	if m.modules == nil {
+		m.modules = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.modules[ids[i]] = struct{}{}
+	}
+}
+
+// ClearModules clears the "modules" edge to the Module entity.
+func (m *NamespaceMutation) ClearModules() {
+	m.clearedmodules = true
+}
+
+// ModulesCleared reports if the "modules" edge to the Module entity was cleared.
+func (m *NamespaceMutation) ModulesCleared() bool {
+	return m.clearedmodules
+}
+
+// RemoveModuleIDs removes the "modules" edge to the Module entity by IDs.
+func (m *NamespaceMutation) RemoveModuleIDs(ids ...int) {
+	if m.removedmodules == nil {
+		m.removedmodules = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.modules, ids[i])
+		m.removedmodules[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedModules returns the removed IDs of the "modules" edge to the Module entity.
+func (m *NamespaceMutation) RemovedModulesIDs() (ids []int) {
+	for id := range m.removedmodules {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ModulesIDs returns the "modules" edge IDs in the mutation.
+func (m *NamespaceMutation) ModulesIDs() (ids []int) {
+	for id := range m.modules {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetModules resets all changes to the "modules" edge.
+func (m *NamespaceMutation) ResetModules() {
+	m.modules = nil
+	m.clearedmodules = false
+	m.removedmodules = nil
+}
+
+// AddInstallationIDs adds the "installations" edge to the Installation entity by ids.
+func (m *NamespaceMutation) AddInstallationIDs(ids ...int) {
+	if m.installations == nil {
+		m.installations = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.installations[ids[i]] = struct{}{}
+	}
+}
+
+// ClearInstallations clears the "installations" edge to the Installation entity.
+func (m *NamespaceMutation) ClearInstallations() {
+	m.clearedinstallations = true
+}
+
+// InstallationsCleared reports if the "installations" edge to the Installation entity was cleared.
+func (m *NamespaceMutation) InstallationsCleared() bool {
+	return m.clearedinstallations
+}
+
+// RemoveInstallationIDs removes the "installations" edge to the Installation entity by IDs.
+func (m *NamespaceMutation) RemoveInstallationIDs(ids ...int) {
+	if m.removedinstallations == nil {
+		m.removedinstallations = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.installations, ids[i])
+		m.removedinstallations[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedInstallations returns the removed IDs of the "installations" edge to the Installation entity.
+func (m *NamespaceMutation) RemovedInstallationsIDs() (ids []int) {
+	for id := range m.removedinstallations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// InstallationsIDs returns the "installations" edge IDs in the mutation.
+func (m *NamespaceMutation) InstallationsIDs() (ids []int) {
+	for id := range m.installations {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetInstallations resets all changes to the "installations" edge.
+func (m *NamespaceMutation) ResetInstallations() {
+	m.installations = nil
+	m.clearedinstallations = false
+	m.removedinstallations = nil
+}
+
+// Where appends a list predicates to the NamespaceMutation builder.
+func (m *NamespaceMutation) Where(ps ...predicate.Namespace) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *NamespaceMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Namespace).
+func (m *NamespaceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *NamespaceMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.name != nil {
+		fields = append(fields, namespace.FieldName)
+	}
+	if m.created_at != nil {
+		fields = append(fields, namespace.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *NamespaceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case namespace.FieldName:
+		return m.Name()
+	case namespace.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *NamespaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case namespace.FieldName:
+		return m.OldName(ctx)
+	case namespace.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Namespace field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NamespaceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case namespace.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case namespace.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Namespace field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *NamespaceMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *NamespaceMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *NamespaceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Namespace numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *NamespaceMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *NamespaceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *NamespaceMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Namespace nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *NamespaceMutation) ResetField(name string) error {
+	switch name {
+	case namespace.FieldName:
+		m.ResetName()
+		return nil
+	case namespace.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Namespace field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *NamespaceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.groups != nil {
+		edges = append(edges, namespace.EdgeGroups)
+	}
+	if m.users != nil {
+		edges = append(edges, namespace.EdgeUsers)
+	}
+	if m.modules != nil {
+		edges = append(edges, namespace.EdgeModules)
+	}
+	if m.installations != nil {
+		edges = append(edges, namespace.EdgeInstallations)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *NamespaceMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case namespace.EdgeGroups:
+		ids := make([]ent.Value, 0, len(m.groups))
+		for id := range m.groups {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.users))
+		for id := range m.users {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeModules:
+		ids := make([]ent.Value, 0, len(m.modules))
+		for id := range m.modules {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeInstallations:
+		ids := make([]ent.Value, 0, len(m.installations))
+		for id := range m.installations {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *NamespaceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.removedgroups != nil {
+		edges = append(edges, namespace.EdgeGroups)
+	}
+	if m.removedusers != nil {
+		edges = append(edges, namespace.EdgeUsers)
+	}
+	if m.removedmodules != nil {
+		edges = append(edges, namespace.EdgeModules)
+	}
+	if m.removedinstallations != nil {
+		edges = append(edges, namespace.EdgeInstallations)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *NamespaceMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case namespace.EdgeGroups:
+		ids := make([]ent.Value, 0, len(m.removedgroups))
+		for id := range m.removedgroups {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.removedusers))
+		for id := range m.removedusers {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeModules:
+		ids := make([]ent.Value, 0, len(m.removedmodules))
+		for id := range m.removedmodules {
+			ids = append(ids, id)
+		}
+		return ids
+	case namespace.EdgeInstallations:
+		ids := make([]ent.Value, 0, len(m.removedinstallations))
+		for id := range m.removedinstallations {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *NamespaceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedgroups {
+		edges = append(edges, namespace.EdgeGroups)
+	}
+	if m.clearedusers {
+		edges = append(edges, namespace.EdgeUsers)
+	}
+	if m.clearedmodules {
+		edges = append(edges, namespace.EdgeModules)
+	}
+	if m.clearedinstallations {
+		edges = append(edges, namespace.EdgeInstallations)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *NamespaceMutation) EdgeCleared(name string) bool {
+	switch name {
+	case namespace.EdgeGroups:
+		return m.clearedgroups
+	case namespace.EdgeUsers:
+		return m.clearedusers
+	case namespace.EdgeModules:
+		return m.clearedmodules
+	case namespace.EdgeInstallations:
+		return m.clearedinstallations
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *NamespaceMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Namespace unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *NamespaceMutation) ResetEdge(name string) error {
+	switch name {
+	case namespace.EdgeGroups:
+		m.ResetGroups()
+		return nil
+	case namespace.EdgeUsers:
+		m.ResetUsers()
+		return nil
+	case namespace.EdgeModules:
+		m.ResetModules()
+		return nil
+	case namespace.EdgeInstallations:
+		m.ResetInstallations()
+		return nil
+	}
+	return fmt.Errorf("unknown Namespace edge %s", name)
+}
+
+// UserMutation represents an operation that mutates the User nodes in the graph.
+type UserMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	name              *string
+	created_at        *time.Time
+	clearedFields     map[string]struct{}
+	groups            map[int]struct{}
+	removedgroups     map[int]struct{}
+	clearedgroups     bool
+	namespaces        map[int]struct{}
+	removednamespaces map[int]struct{}
+	clearednamespaces bool
+	done              bool
+	oldValue          func(context.Context) (*User, error)
+	predicates        []predicate.User
+}
+
+var _ ent.Mutation = (*UserMutation)(nil)
+
+// userOption allows management of the mutation configuration using functional options.
+type userOption func(*UserMutation)
+
+// newUserMutation creates new mutation for the User entity.
+func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
+	m := &UserMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeUser,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withUserID sets the ID field of the mutation.
+func withUserID(id int) userOption {
+	return func(m *UserMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *User
+		)
+		m.oldValue = func(ctx context.Context) (*User, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().User.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withUser sets the old User of the mutation.
+func withUser(node *User) userOption {
+	return func(m *UserMutation) {
+		m.oldValue = func(context.Context) (*User, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m UserMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m UserMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *UserMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *UserMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *UserMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *UserMutation) ResetName() {
+	m.name = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *UserMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *UserMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *UserMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// AddGroupIDs adds the "groups" edge to the Group entity by ids.
+func (m *UserMutation) AddGroupIDs(ids ...int) {
+	if m.groups == nil {
+		m.groups = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.groups[ids[i]] = struct{}{}
+	}
+}
+
+// ClearGroups clears the "groups" edge to the Group entity.
+func (m *UserMutation) ClearGroups() {
+	m.clearedgroups = true
+}
+
+// GroupsCleared reports if the "groups" edge to the Group entity was cleared.
+func (m *UserMutation) GroupsCleared() bool {
+	return m.clearedgroups
+}
+
+// RemoveGroupIDs removes the "groups" edge to the Group entity by IDs.
+func (m *UserMutation) RemoveGroupIDs(ids ...int) {
+	if m.removedgroups == nil {
+		m.removedgroups = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.groups, ids[i])
+		m.removedgroups[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedGroups returns the removed IDs of the "groups" edge to the Group entity.
+func (m *UserMutation) RemovedGroupsIDs() (ids []int) {
+	for id := range m.removedgroups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// GroupsIDs returns the "groups" edge IDs in the mutation.
+func (m *UserMutation) GroupsIDs() (ids []int) {
+	for id := range m.groups {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetGroups resets all changes to the "groups" edge.
+func (m *UserMutation) ResetGroups() {
+	m.groups = nil
+	m.clearedgroups = false
+	m.removedgroups = nil
+}
+
+// AddNamespaceIDs adds the "namespaces" edge to the Namespace entity by ids.
+func (m *UserMutation) AddNamespaceIDs(ids ...int) {
+	if m.namespaces == nil {
+		m.namespaces = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.namespaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNamespaces clears the "namespaces" edge to the Namespace entity.
+func (m *UserMutation) ClearNamespaces() {
+	m.clearednamespaces = true
+}
+
+// NamespacesCleared reports if the "namespaces" edge to the Namespace entity was cleared.
+func (m *UserMutation) NamespacesCleared() bool {
+	return m.clearednamespaces
+}
+
+// RemoveNamespaceIDs removes the "namespaces" edge to the Namespace entity by IDs.
+func (m *UserMutation) RemoveNamespaceIDs(ids ...int) {
+	if m.removednamespaces == nil {
+		m.removednamespaces = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.namespaces, ids[i])
+		m.removednamespaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNamespaces returns the removed IDs of the "namespaces" edge to the Namespace entity.
+func (m *UserMutation) RemovedNamespacesIDs() (ids []int) {
+	for id := range m.removednamespaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NamespacesIDs returns the "namespaces" edge IDs in the mutation.
+func (m *UserMutation) NamespacesIDs() (ids []int) {
+	for id := range m.namespaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNamespaces resets all changes to the "namespaces" edge.
+func (m *UserMutation) ResetNamespaces() {
+	m.namespaces = nil
+	m.clearednamespaces = false
+	m.removednamespaces = nil
+}
+
+// Where appends a list predicates to the UserMutation builder.
+func (m *UserMutation) Where(ps ...predicate.User) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *UserMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (User).
+func (m *UserMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *UserMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.name != nil {
+		fields = append(fields, user.FieldName)
+	}
+	if m.created_at != nil {
+		fields = append(fields, user.FieldCreatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *UserMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldName:
+		return m.Name()
+	case user.FieldCreatedAt:
+		return m.CreatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case user.FieldName:
+		return m.OldName(ctx)
+	case user.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown User field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case user.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case user.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown User field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *UserMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown User numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *UserMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *UserMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *UserMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown User nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *UserMutation) ResetField(name string) error {
+	switch name {
+	case user.FieldName:
+		m.ResetName()
+		return nil
+	case user.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown User field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *UserMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.groups != nil {
+		edges = append(edges, user.EdgeGroups)
+	}
+	if m.namespaces != nil {
+		edges = append(edges, user.EdgeNamespaces)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *UserMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case user.EdgeGroups:
+		ids := make([]ent.Value, 0, len(m.groups))
+		for id := range m.groups {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeNamespaces:
+		ids := make([]ent.Value, 0, len(m.namespaces))
+		for id := range m.namespaces {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *UserMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedgroups != nil {
+		edges = append(edges, user.EdgeGroups)
+	}
+	if m.removednamespaces != nil {
+		edges = append(edges, user.EdgeNamespaces)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case user.EdgeGroups:
+		ids := make([]ent.Value, 0, len(m.removedgroups))
+		for id := range m.removedgroups {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeNamespaces:
+		ids := make([]ent.Value, 0, len(m.removednamespaces))
+		for id := range m.removednamespaces {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *UserMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedgroups {
+		edges = append(edges, user.EdgeGroups)
+	}
+	if m.clearednamespaces {
+		edges = append(edges, user.EdgeNamespaces)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *UserMutation) EdgeCleared(name string) bool {
+	switch name {
+	case user.EdgeGroups:
+		return m.clearedgroups
+	case user.EdgeNamespaces:
+		return m.clearednamespaces
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *UserMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown User unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *UserMutation) ResetEdge(name string) error {
+	switch name {
+	case user.EdgeGroups:
+		m.ResetGroups()
+		return nil
+	case user.EdgeNamespaces:
+		m.ResetNamespaces()
+		return nil
+	}
+	return fmt.Errorf("unknown User edge %s", name)
 }

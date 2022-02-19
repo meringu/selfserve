@@ -5,15 +5,31 @@ package ent
 import (
 	"time"
 
+	"github.com/meringu/selfserve/pkg/api/ent/group"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 	"github.com/meringu/selfserve/pkg/api/ent/schema"
+	"github.com/meringu/selfserve/pkg/api/ent/user"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	groupFields := schema.Group{}.Fields()
+	_ = groupFields
+	// groupDescCreatedAt is the schema descriptor for created_at field.
+	groupDescCreatedAt := groupFields[1].Descriptor()
+	// group.DefaultCreatedAt holds the default value on creation for the created_at field.
+	group.DefaultCreatedAt = groupDescCreatedAt.Default.(func() time.Time)
+	installationFields := schema.Installation{}.Fields()
+	_ = installationFields
+	// installationDescCreatedAt is the schema descriptor for created_at field.
+	installationDescCreatedAt := installationFields[0].Descriptor()
+	// installation.DefaultCreatedAt holds the default value on creation for the created_at field.
+	installation.DefaultCreatedAt = installationDescCreatedAt.Default.(func() time.Time)
 	moduleFields := schema.Module{}.Fields()
 	_ = moduleFields
 	// moduleDescCreatedAt is the schema descriptor for created_at field.
@@ -23,7 +39,19 @@ func init() {
 	moduleversionFields := schema.ModuleVersion{}.Fields()
 	_ = moduleversionFields
 	// moduleversionDescCreatedAt is the schema descriptor for created_at field.
-	moduleversionDescCreatedAt := moduleversionFields[2].Descriptor()
+	moduleversionDescCreatedAt := moduleversionFields[0].Descriptor()
 	// moduleversion.DefaultCreatedAt holds the default value on creation for the created_at field.
 	moduleversion.DefaultCreatedAt = moduleversionDescCreatedAt.Default.(func() time.Time)
+	namespaceFields := schema.Namespace{}.Fields()
+	_ = namespaceFields
+	// namespaceDescCreatedAt is the schema descriptor for created_at field.
+	namespaceDescCreatedAt := namespaceFields[1].Descriptor()
+	// namespace.DefaultCreatedAt holds the default value on creation for the created_at field.
+	namespace.DefaultCreatedAt = namespaceDescCreatedAt.Default.(func() time.Time)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescCreatedAt is the schema descriptor for created_at field.
+	userDescCreatedAt := userFields[1].Descriptor()
+	// user.DefaultCreatedAt holds the default value on creation for the created_at field.
+	user.DefaultCreatedAt = userDescCreatedAt.Default.(func() time.Time)
 }

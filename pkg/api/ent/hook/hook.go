@@ -9,6 +9,32 @@ import (
 	"github.com/meringu/selfserve/pkg/api/ent"
 )
 
+// The GroupFunc type is an adapter to allow the use of ordinary
+// function as Group mutator.
+type GroupFunc func(context.Context, *ent.GroupMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f GroupFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.GroupMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GroupMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The InstallationFunc type is an adapter to allow the use of ordinary
+// function as Installation mutator.
+type InstallationFunc func(context.Context, *ent.InstallationMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InstallationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.InstallationMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InstallationMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ModuleFunc type is an adapter to allow the use of ordinary
 // function as Module mutator.
 type ModuleFunc func(context.Context, *ent.ModuleMutation) (ent.Value, error)
@@ -31,6 +57,32 @@ func (f ModuleVersionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 	mv, ok := m.(*ent.ModuleVersionMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ModuleVersionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The NamespaceFunc type is an adapter to allow the use of ordinary
+// function as Namespace mutator.
+type NamespaceFunc func(context.Context, *ent.NamespaceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NamespaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.NamespaceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NamespaceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The UserFunc type is an adapter to allow the use of ordinary
+// function as User mutator.
+type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.UserMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
 	}
 	return f(ctx, mv)
 }

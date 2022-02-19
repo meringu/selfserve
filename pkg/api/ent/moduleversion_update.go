@@ -5,11 +5,11 @@ package ent
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
@@ -25,32 +25,6 @@ type ModuleVersionUpdate struct {
 // Where appends a list predicates to the ModuleVersionUpdate builder.
 func (mvu *ModuleVersionUpdate) Where(ps ...predicate.ModuleVersion) *ModuleVersionUpdate {
 	mvu.mutation.Where(ps...)
-	return mvu
-}
-
-// SetVersion sets the "version" field.
-func (mvu *ModuleVersionUpdate) SetVersion(s string) *ModuleVersionUpdate {
-	mvu.mutation.SetVersion(s)
-	return mvu
-}
-
-// SetSource sets the "source" field.
-func (mvu *ModuleVersionUpdate) SetSource(s string) *ModuleVersionUpdate {
-	mvu.mutation.SetSource(s)
-	return mvu
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (mvu *ModuleVersionUpdate) SetCreatedAt(t time.Time) *ModuleVersionUpdate {
-	mvu.mutation.SetCreatedAt(t)
-	return mvu
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (mvu *ModuleVersionUpdate) SetNillableCreatedAt(t *time.Time) *ModuleVersionUpdate {
-	if t != nil {
-		mvu.SetCreatedAt(*t)
-	}
 	return mvu
 }
 
@@ -73,6 +47,21 @@ func (mvu *ModuleVersionUpdate) SetModule(m *Module) *ModuleVersionUpdate {
 	return mvu.SetModuleID(m.ID)
 }
 
+// AddInstallationIDs adds the "installations" edge to the Installation entity by IDs.
+func (mvu *ModuleVersionUpdate) AddInstallationIDs(ids ...int) *ModuleVersionUpdate {
+	mvu.mutation.AddInstallationIDs(ids...)
+	return mvu
+}
+
+// AddInstallations adds the "installations" edges to the Installation entity.
+func (mvu *ModuleVersionUpdate) AddInstallations(i ...*Installation) *ModuleVersionUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return mvu.AddInstallationIDs(ids...)
+}
+
 // Mutation returns the ModuleVersionMutation object of the builder.
 func (mvu *ModuleVersionUpdate) Mutation() *ModuleVersionMutation {
 	return mvu.mutation
@@ -82,6 +71,27 @@ func (mvu *ModuleVersionUpdate) Mutation() *ModuleVersionMutation {
 func (mvu *ModuleVersionUpdate) ClearModule() *ModuleVersionUpdate {
 	mvu.mutation.ClearModule()
 	return mvu
+}
+
+// ClearInstallations clears all "installations" edges to the Installation entity.
+func (mvu *ModuleVersionUpdate) ClearInstallations() *ModuleVersionUpdate {
+	mvu.mutation.ClearInstallations()
+	return mvu
+}
+
+// RemoveInstallationIDs removes the "installations" edge to Installation entities by IDs.
+func (mvu *ModuleVersionUpdate) RemoveInstallationIDs(ids ...int) *ModuleVersionUpdate {
+	mvu.mutation.RemoveInstallationIDs(ids...)
+	return mvu
+}
+
+// RemoveInstallations removes "installations" edges to Installation entities.
+func (mvu *ModuleVersionUpdate) RemoveInstallations(i ...*Installation) *ModuleVersionUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return mvu.RemoveInstallationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -156,27 +166,6 @@ func (mvu *ModuleVersionUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			}
 		}
 	}
-	if value, ok := mvu.mutation.Version(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldVersion,
-		})
-	}
-	if value, ok := mvu.mutation.Source(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldSource,
-		})
-	}
-	if value, ok := mvu.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: moduleversion.FieldCreatedAt,
-		})
-	}
 	if mvu.mutation.ModuleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -212,6 +201,60 @@ func (mvu *ModuleVersionUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mvu.mutation.InstallationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mvu.mutation.RemovedInstallationsIDs(); len(nodes) > 0 && !mvu.mutation.InstallationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mvu.mutation.InstallationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mvu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{moduleversion.Label}
@@ -229,32 +272,6 @@ type ModuleVersionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ModuleVersionMutation
-}
-
-// SetVersion sets the "version" field.
-func (mvuo *ModuleVersionUpdateOne) SetVersion(s string) *ModuleVersionUpdateOne {
-	mvuo.mutation.SetVersion(s)
-	return mvuo
-}
-
-// SetSource sets the "source" field.
-func (mvuo *ModuleVersionUpdateOne) SetSource(s string) *ModuleVersionUpdateOne {
-	mvuo.mutation.SetSource(s)
-	return mvuo
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (mvuo *ModuleVersionUpdateOne) SetCreatedAt(t time.Time) *ModuleVersionUpdateOne {
-	mvuo.mutation.SetCreatedAt(t)
-	return mvuo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (mvuo *ModuleVersionUpdateOne) SetNillableCreatedAt(t *time.Time) *ModuleVersionUpdateOne {
-	if t != nil {
-		mvuo.SetCreatedAt(*t)
-	}
-	return mvuo
 }
 
 // SetModuleID sets the "module" edge to the Module entity by ID.
@@ -276,6 +293,21 @@ func (mvuo *ModuleVersionUpdateOne) SetModule(m *Module) *ModuleVersionUpdateOne
 	return mvuo.SetModuleID(m.ID)
 }
 
+// AddInstallationIDs adds the "installations" edge to the Installation entity by IDs.
+func (mvuo *ModuleVersionUpdateOne) AddInstallationIDs(ids ...int) *ModuleVersionUpdateOne {
+	mvuo.mutation.AddInstallationIDs(ids...)
+	return mvuo
+}
+
+// AddInstallations adds the "installations" edges to the Installation entity.
+func (mvuo *ModuleVersionUpdateOne) AddInstallations(i ...*Installation) *ModuleVersionUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return mvuo.AddInstallationIDs(ids...)
+}
+
 // Mutation returns the ModuleVersionMutation object of the builder.
 func (mvuo *ModuleVersionUpdateOne) Mutation() *ModuleVersionMutation {
 	return mvuo.mutation
@@ -285,6 +317,27 @@ func (mvuo *ModuleVersionUpdateOne) Mutation() *ModuleVersionMutation {
 func (mvuo *ModuleVersionUpdateOne) ClearModule() *ModuleVersionUpdateOne {
 	mvuo.mutation.ClearModule()
 	return mvuo
+}
+
+// ClearInstallations clears all "installations" edges to the Installation entity.
+func (mvuo *ModuleVersionUpdateOne) ClearInstallations() *ModuleVersionUpdateOne {
+	mvuo.mutation.ClearInstallations()
+	return mvuo
+}
+
+// RemoveInstallationIDs removes the "installations" edge to Installation entities by IDs.
+func (mvuo *ModuleVersionUpdateOne) RemoveInstallationIDs(ids ...int) *ModuleVersionUpdateOne {
+	mvuo.mutation.RemoveInstallationIDs(ids...)
+	return mvuo
+}
+
+// RemoveInstallations removes "installations" edges to Installation entities.
+func (mvuo *ModuleVersionUpdateOne) RemoveInstallations(i ...*Installation) *ModuleVersionUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return mvuo.RemoveInstallationIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -383,27 +436,6 @@ func (mvuo *ModuleVersionUpdateOne) sqlSave(ctx context.Context) (_node *ModuleV
 			}
 		}
 	}
-	if value, ok := mvuo.mutation.Version(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldVersion,
-		})
-	}
-	if value, ok := mvuo.mutation.Source(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldSource,
-		})
-	}
-	if value, ok := mvuo.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: moduleversion.FieldCreatedAt,
-		})
-	}
 	if mvuo.mutation.ModuleCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -431,6 +463,60 @@ func (mvuo *ModuleVersionUpdateOne) sqlSave(ctx context.Context) (_node *ModuleV
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeInt,
 					Column: module.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mvuo.mutation.InstallationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mvuo.mutation.RemovedInstallationsIDs(); len(nodes) > 0 && !mvuo.mutation.InstallationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mvuo.mutation.InstallationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
 				},
 			},
 		}

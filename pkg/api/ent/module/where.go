@@ -412,6 +412,34 @@ func CreatedAtLTE(v time.Time) predicate.Module {
 	})
 }
 
+// HasNamespace applies the HasEdge predicate on the "namespace" edge.
+func HasNamespace() predicate.Module {
+	return predicate.Module(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NamespaceTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, NamespaceTable, NamespaceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasNamespaceWith applies the HasEdge predicate on the "namespace" edge with a given conditions (other predicates).
+func HasNamespaceWith(preds ...predicate.Namespace) predicate.Module {
+	return predicate.Module(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(NamespaceInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, NamespaceTable, NamespaceColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasVersions applies the HasEdge predicate on the "versions" edge.
 func HasVersions() predicate.Module {
 	return predicate.Module(func(s *sql.Selector) {

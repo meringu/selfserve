@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
@@ -26,8 +28,9 @@ type ModuleVersionQuery struct {
 	fields     []string
 	predicates []predicate.ModuleVersion
 	// eager-loading edges.
-	withModule *ModuleQuery
-	withFKs    bool
+	withModule        *ModuleQuery
+	withInstallations *InstallationQuery
+	withFKs           bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,28 @@ func (mvq *ModuleVersionQuery) QueryModule() *ModuleQuery {
 			sqlgraph.From(moduleversion.Table, moduleversion.FieldID, selector),
 			sqlgraph.To(module.Table, module.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, moduleversion.ModuleTable, moduleversion.ModuleColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mvq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInstallations chains the current query on the "installations" edge.
+func (mvq *ModuleVersionQuery) QueryInstallations() *InstallationQuery {
+	query := &InstallationQuery{config: mvq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mvq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mvq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(moduleversion.Table, moduleversion.FieldID, selector),
+			sqlgraph.To(installation.Table, installation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, moduleversion.InstallationsTable, moduleversion.InstallationsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mvq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,12 +287,13 @@ func (mvq *ModuleVersionQuery) Clone() *ModuleVersionQuery {
 		return nil
 	}
 	return &ModuleVersionQuery{
-		config:     mvq.config,
-		limit:      mvq.limit,
-		offset:     mvq.offset,
-		order:      append([]OrderFunc{}, mvq.order...),
-		predicates: append([]predicate.ModuleVersion{}, mvq.predicates...),
-		withModule: mvq.withModule.Clone(),
+		config:            mvq.config,
+		limit:             mvq.limit,
+		offset:            mvq.offset,
+		order:             append([]OrderFunc{}, mvq.order...),
+		predicates:        append([]predicate.ModuleVersion{}, mvq.predicates...),
+		withModule:        mvq.withModule.Clone(),
+		withInstallations: mvq.withInstallations.Clone(),
 		// clone intermediate query.
 		sql:  mvq.sql.Clone(),
 		path: mvq.path,
@@ -285,18 +311,29 @@ func (mvq *ModuleVersionQuery) WithModule(opts ...func(*ModuleQuery)) *ModuleVer
 	return mvq
 }
 
+// WithInstallations tells the query-builder to eager-load the nodes that are connected to
+// the "installations" edge. The optional arguments are used to configure the query builder of the edge.
+func (mvq *ModuleVersionQuery) WithInstallations(opts ...func(*InstallationQuery)) *ModuleVersionQuery {
+	query := &InstallationQuery{config: mvq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	mvq.withInstallations = query
+	return mvq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		Version string `json:"version,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.ModuleVersion.Query().
-//		GroupBy(moduleversion.FieldVersion).
+//		GroupBy(moduleversion.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -318,11 +355,11 @@ func (mvq *ModuleVersionQuery) GroupBy(field string, fields ...string) *ModuleVe
 // Example:
 //
 //	var v []struct {
-//		Version string `json:"version,omitempty"`
+//		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
 //	client.ModuleVersion.Query().
-//		Select(moduleversion.FieldVersion).
+//		Select(moduleversion.FieldCreatedAt).
 //		Scan(ctx, &v)
 //
 func (mvq *ModuleVersionQuery) Select(fields ...string) *ModuleVersionSelect {
@@ -351,8 +388,9 @@ func (mvq *ModuleVersionQuery) sqlAll(ctx context.Context) ([]*ModuleVersion, er
 		nodes       = []*ModuleVersion{}
 		withFKs     = mvq.withFKs
 		_spec       = mvq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			mvq.withModule != nil,
+			mvq.withInstallations != nil,
 		}
 	)
 	if mvq.withModule != nil {
@@ -407,6 +445,35 @@ func (mvq *ModuleVersionQuery) sqlAll(ctx context.Context) ([]*ModuleVersion, er
 			for i := range nodes {
 				nodes[i].Edges.Module = n
 			}
+		}
+	}
+
+	if query := mvq.withInstallations; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[int]*ModuleVersion)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Installations = []*Installation{}
+		}
+		query.withFKs = true
+		query.Where(predicate.Installation(func(s *sql.Selector) {
+			s.Where(sql.InValues(moduleversion.InstallationsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.module_version_installations
+			if fk == nil {
+				return nil, fmt.Errorf(`foreign-key "module_version_installations" is nil for node %v`, n.ID)
+			}
+			node, ok := nodeids[*fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "module_version_installations" returned %v for node %v`, *fk, n.ID)
+			}
+			node.Edges.Installations = append(node.Edges.Installations, n)
 		}
 	}
 

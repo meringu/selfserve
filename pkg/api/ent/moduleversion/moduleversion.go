@@ -11,14 +11,12 @@ const (
 	Label = "module_version"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldVersion holds the string denoting the version field in the database.
-	FieldVersion = "version"
-	// FieldSource holds the string denoting the source field in the database.
-	FieldSource = "source"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// EdgeModule holds the string denoting the module edge name in mutations.
 	EdgeModule = "module"
+	// EdgeInstallations holds the string denoting the installations edge name in mutations.
+	EdgeInstallations = "installations"
 	// Table holds the table name of the moduleversion in the database.
 	Table = "module_versions"
 	// ModuleTable is the table that holds the module relation/edge.
@@ -28,13 +26,18 @@ const (
 	ModuleInverseTable = "modules"
 	// ModuleColumn is the table column denoting the module relation/edge.
 	ModuleColumn = "module_versions"
+	// InstallationsTable is the table that holds the installations relation/edge.
+	InstallationsTable = "installations"
+	// InstallationsInverseTable is the table name for the Installation entity.
+	// It exists in this package in order to avoid circular dependency with the "installation" package.
+	InstallationsInverseTable = "installations"
+	// InstallationsColumn is the table column denoting the installations relation/edge.
+	InstallationsColumn = "module_version_installations"
 )
 
 // Columns holds all SQL columns for moduleversion fields.
 var Columns = []string{
 	FieldID,
-	FieldVersion,
-	FieldSource,
 	FieldCreatedAt,
 }
 

@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 )
 
 // ModuleCreate is the builder for creating a Module entity.
@@ -45,6 +46,25 @@ func (mc *ModuleCreate) SetNillableCreatedAt(t *time.Time) *ModuleCreate {
 		mc.SetCreatedAt(*t)
 	}
 	return mc
+}
+
+// SetNamespaceID sets the "namespace" edge to the Namespace entity by ID.
+func (mc *ModuleCreate) SetNamespaceID(id int) *ModuleCreate {
+	mc.mutation.SetNamespaceID(id)
+	return mc
+}
+
+// SetNillableNamespaceID sets the "namespace" edge to the Namespace entity by ID if the given value is not nil.
+func (mc *ModuleCreate) SetNillableNamespaceID(id *int) *ModuleCreate {
+	if id != nil {
+		mc = mc.SetNamespaceID(*id)
+	}
+	return mc
+}
+
+// SetNamespace sets the "namespace" edge to the Namespace entity.
+func (mc *ModuleCreate) SetNamespace(n *Namespace) *ModuleCreate {
+	return mc.SetNamespaceID(n.ID)
 }
 
 // AddVersionIDs adds the "versions" edge to the ModuleVersion entity by IDs.
@@ -200,6 +220,26 @@ func (mc *ModuleCreate) createSpec() (*Module, *sqlgraph.CreateSpec) {
 			Column: module.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
+	}
+	if nodes := mc.mutation.NamespaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   module.NamespaceTable,
+			Columns: []string{module.NamespaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: namespace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.namespace_modules = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := mc.mutation.VersionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

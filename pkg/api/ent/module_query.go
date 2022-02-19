@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
 )
 
@@ -27,7 +28,9 @@ type ModuleQuery struct {
 	fields     []string
 	predicates []predicate.Module
 	// eager-loading edges.
-	withVersions *ModuleVersionQuery
+	withNamespace *NamespaceQuery
+	withVersions  *ModuleVersionQuery
+	withFKs       bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -62,6 +65,28 @@ func (mq *ModuleQuery) Unique(unique bool) *ModuleQuery {
 func (mq *ModuleQuery) Order(o ...OrderFunc) *ModuleQuery {
 	mq.order = append(mq.order, o...)
 	return mq
+}
+
+// QueryNamespace chains the current query on the "namespace" edge.
+func (mq *ModuleQuery) QueryNamespace() *NamespaceQuery {
+	query := &NamespaceQuery{config: mq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(module.Table, module.FieldID, selector),
+			sqlgraph.To(namespace.Table, namespace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, module.NamespaceTable, module.NamespaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryVersions chains the current query on the "versions" edge.
@@ -262,16 +287,28 @@ func (mq *ModuleQuery) Clone() *ModuleQuery {
 		return nil
 	}
 	return &ModuleQuery{
-		config:       mq.config,
-		limit:        mq.limit,
-		offset:       mq.offset,
-		order:        append([]OrderFunc{}, mq.order...),
-		predicates:   append([]predicate.Module{}, mq.predicates...),
-		withVersions: mq.withVersions.Clone(),
+		config:        mq.config,
+		limit:         mq.limit,
+		offset:        mq.offset,
+		order:         append([]OrderFunc{}, mq.order...),
+		predicates:    append([]predicate.Module{}, mq.predicates...),
+		withNamespace: mq.withNamespace.Clone(),
+		withVersions:  mq.withVersions.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
 	}
+}
+
+// WithNamespace tells the query-builder to eager-load the nodes that are connected to
+// the "namespace" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *ModuleQuery) WithNamespace(opts ...func(*NamespaceQuery)) *ModuleQuery {
+	query := &NamespaceQuery{config: mq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withNamespace = query
+	return mq
 }
 
 // WithVersions tells the query-builder to eager-load the nodes that are connected to
@@ -349,11 +386,19 @@ func (mq *ModuleQuery) prepareQuery(ctx context.Context) error {
 func (mq *ModuleQuery) sqlAll(ctx context.Context) ([]*Module, error) {
 	var (
 		nodes       = []*Module{}
+		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			mq.withNamespace != nil,
 			mq.withVersions != nil,
 		}
 	)
+	if mq.withNamespace != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, module.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Module{config: mq.config}
 		nodes = append(nodes, node)
@@ -372,6 +417,35 @@ func (mq *ModuleQuery) sqlAll(ctx context.Context) ([]*Module, error) {
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+
+	if query := mq.withNamespace; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*Module)
+		for i := range nodes {
+			if nodes[i].namespace_modules == nil {
+				continue
+			}
+			fk := *nodes[i].namespace_modules
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(namespace.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "namespace_modules" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Namespace = n
+			}
+		}
 	}
 
 	if query := mq.withVersions; query != nil {

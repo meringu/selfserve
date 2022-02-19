@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/meringu/selfserve/pkg/api/ent"
+	"github.com/meringu/selfserve/pkg/api/ent/migrate"
 	"github.com/spf13/cobra"
 )
 
@@ -36,7 +37,7 @@ var migrateCmd = &cobra.Command{
 		// 	return
 		// }
 
-		err = db.Schema.Create(cmd.Context())
+		err = db.Schema.Create(cmd.Context(), migrate.WithGlobalUniqueID(true))
 		if err != nil {
 			log.Error(err, "failed to migrate schema")
 			exitCode = 1

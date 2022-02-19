@@ -1,0 +1,37 @@
+type Installation implements Node {
+  id: ID!
+  moduleVersion: ModuleVersion!
+  createdAt: Time!
+}
+
+type InstallationConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [InstallationEdge]
+}
+
+type InstallationEdge {
+  node: Installation
+  cursor: Cursor!
+}
+
+enum InstallationOrderField {
+  CREATED_AT
+}
+
+input InstallationOrder {
+  direction: OrderDirection!
+  field: InstallationOrderField
+}
+
+input CreateInstallation {
+  moduleVersionId: ID!
+}
+
+input UpdateInstallation {
+  id: ID!
+}
+
+input DeleteInstallation {
+  id: ID!
+}

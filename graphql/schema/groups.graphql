@@ -1,0 +1,71 @@
+type Group implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  resolvedUsers(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  parent: Group
+  children(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+}
+
+type GroupConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [GroupEdge]
+}
+
+type GroupEdge {
+  node: Group
+  cursor: Cursor!
+}
+
+enum GroupOrderField {
+  CREATED_AT
+  NAME
+}
+
+input GroupOrder {
+  direction: OrderDirection!
+  field: GroupOrderField
+}
+
+input CreateGroup {
+  name: String!
+}
+
+input UpdateGroup {
+  id: ID!
+  name: String
+  parent: ID
+  users: [ID]
+}
+
+input DeleteGroup {
+  id: ID!
+}
+
+input AddUserToGroup {
+  groupId: ID!
+  userId: ID!
+}

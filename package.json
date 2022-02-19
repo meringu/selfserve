@@ -2,48 +2,57 @@
   "name": "selfserve",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "build": "webpack --mode=production",
+    "start": "webpack-dev-server --mode=development --open",
+    "lint": "eslint src *.js",
+    "lint-fix": "eslint --fix src *.js"
+  },
   "dependencies": {
     "@apollo/client": "^3.4.11",
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@fontsource/roboto": "^4.5.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.15",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "bootstrap": "^5.1.1",
-    "graphql": "^15.5.3",
+    "@mui/icons-material": "^5.0.0",
+    "@mui/material": "^5.0.0",
+    "@mui/x-data-grid": "^4.0.0",
+    "core-js": "^3.18.0",
+    "core-js-pure": "^3.18.0",
+    "farce": "^0.4.5",
+    "found-relay": "^0.9.1",
     "react": "^17.0.2",
-    "react-bootstrap": "^1.6.3",
     "react-dom": "^17.0.2",
+    "react-relay": "^12.0.0",
     "react-router-bootstrap": "^0.25.0",
     "react-router-dom": "^5.3.0",
-    "react-scripts": "4.0.3"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "BUILD_PATH=./dist react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "prettier": "prettier -w src/"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "proxy": "http://localhost:8080",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "relay-runtime": "^12.0.0"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^2.0.4",
-    "prettier": "2.4.1"
+    "@4c/babel-preset": "^7.3.6",
+    "@babel/core": "^7.15.0",
+    "@babel/preset-env": "^7.4.0",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/runtime": "^7.15.4",
+    "babel-loader": "^8.2.2",
+    "babel-plugin-relay": "^12.0.0",
+    "css-loader": "^6.2.0",
+    "eslint": "^7.32.0",
+    "eslint-config-standard": "^16.0.3",
+    "eslint-plugin-react": "^7.25.2",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-webpack-plugin": "^3.0.1",
+    "graphql": "^15.6.0",
+    "html-webpack-plugin": "^5.3.2",
+    "relay-compiler-webpack-plugin": "^9.1.0",
+    "source-map-loader": "^3.0.0",
+    "style-loader": "^3.2.1",
+    "webpack": "^5.53.0",
+    "webpack-bundle-analyzer": "^4.4.2",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.0.0",
+    "webpack-shell-plugin-next": "^2.2.2"
   }
 }

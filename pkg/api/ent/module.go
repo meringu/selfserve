@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 )
 
 // Module is the model entity for the Module schema.
@@ -24,22 +25,39 @@ type Module struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ModuleQuery when eager-loading is set.
-	Edges ModuleEdges `json:"edges"`
+	Edges             ModuleEdges `json:"edges"`
+	namespace_modules *int
 }
 
 // ModuleEdges holds the relations/edges for other nodes in the graph.
 type ModuleEdges struct {
+	// Namespace holds the value of the namespace edge.
+	Namespace *Namespace `json:"namespace,omitempty"`
 	// Versions holds the value of the versions edge.
 	Versions []*ModuleVersion `json:"versions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
+}
+
+// NamespaceOrErr returns the Namespace value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ModuleEdges) NamespaceOrErr() (*Namespace, error) {
+	if e.loadedTypes[0] {
+		if e.Namespace == nil {
+			// The edge namespace was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: namespace.Label}
+		}
+		return e.Namespace, nil
+	}
+	return nil, &NotLoadedError{edge: "namespace"}
 }
 
 // VersionsOrErr returns the Versions value or an error if the edge
 // was not loaded in eager-loading.
 func (e ModuleEdges) VersionsOrErr() ([]*ModuleVersion, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.Versions, nil
 	}
 	return nil, &NotLoadedError{edge: "versions"}
@@ -56,6 +74,8 @@ func (*Module) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case module.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
+		case module.ForeignKeys[0]: // namespace_modules
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Module", columns[i])
 		}
@@ -95,9 +115,21 @@ func (m *Module) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				m.CreatedAt = value.Time
 			}
+		case module.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field namespace_modules", value)
+			} else if value.Valid {
+				m.namespace_modules = new(int)
+				*m.namespace_modules = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryNamespace queries the "namespace" edge of the Module entity.
+func (m *Module) QueryNamespace() *NamespaceQuery {
+	return (&ModuleClient{config: m.config}).QueryNamespace(m)
 }
 
 // QueryVersions queries the "versions" edge of the Module entity.

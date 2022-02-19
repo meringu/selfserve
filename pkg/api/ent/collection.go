@@ -9,6 +9,30 @@ import (
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (gr *GroupQuery) CollectFields(ctx context.Context, satisfies ...string) *GroupQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		gr = gr.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return gr
+}
+
+func (gr *GroupQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *GroupQuery {
+	return gr
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (i *InstallationQuery) CollectFields(ctx context.Context, satisfies ...string) *InstallationQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		i = i.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return i
+}
+
+func (i *InstallationQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *InstallationQuery {
+	return i
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (m *ModuleQuery) CollectFields(ctx context.Context, satisfies ...string) *ModuleQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		m = m.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -30,4 +54,28 @@ func (mv *ModuleVersionQuery) CollectFields(ctx context.Context, satisfies ...st
 
 func (mv *ModuleVersionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ModuleVersionQuery {
 	return mv
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (n *NamespaceQuery) CollectFields(ctx context.Context, satisfies ...string) *NamespaceQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		n = n.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return n
+}
+
+func (n *NamespaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *NamespaceQuery {
+	return n
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (u *UserQuery) CollectFields(ctx context.Context, satisfies ...string) *UserQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		u = u.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return u
+}
+
+func (u *UserQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *UserQuery {
+	return u
 }

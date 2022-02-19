@@ -38,20 +38,64 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Group() GroupResolver
+	Module() ModuleResolver
+	ModuleVersion() ModuleVersionResolver
 	Mutation() MutationResolver
+	Namespace() NamespaceResolver
 	Query() QueryResolver
+	User() UserResolver
 }
 
 type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Group struct {
+		Children      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) int
+		CreatedAt     func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Name          func(childComplexity int) int
+		Parent        func(childComplexity int) int
+		ResolvedUsers func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+		Users         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+	}
+
+	GroupConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	GroupEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	Installation struct {
+		CreatedAt     func(childComplexity int) int
+		ID            func(childComplexity int) int
+		ModuleVersion func(childComplexity int) int
+	}
+
+	InstallationConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	InstallationEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	Module struct {
-		CreatedAt   func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Versions    func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		Description   func(childComplexity int) int
+		ID            func(childComplexity int) int
+		LatestVersion func(childComplexity int) int
+		Name          func(childComplexity int) int
+		Versions      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleVersionOrder, where *ent.ModuleVersionWhereInput) int
 	}
 
 	ModuleConnection struct {
@@ -66,18 +110,62 @@ type ComplexityRoot struct {
 	}
 
 	ModuleVersion struct {
-		ID      func(childComplexity int) int
-		Source  func(childComplexity int) int
-		Version func(childComplexity int) int
+		CreatedAt     func(childComplexity int) int
+		ID            func(childComplexity int) int
+		Installations func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstallationOrder, where *ent.InstallationWhereInput) int
+		Module        func(childComplexity int) int
+	}
+
+	ModuleVersionConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ModuleVersionEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	Mutation struct {
+		CreateGroup         func(childComplexity int, input model.CreateGroup) int
+		CreateInstallation  func(childComplexity int, input model.CreateInstallation) int
 		CreateModule        func(childComplexity int, input model.CreateModule) int
 		CreateModuleVersion func(childComplexity int, input model.CreateModuleVersion) int
+		CreateNamespace     func(childComplexity int, input model.CreateNamespace) int
+		CreateUser          func(childComplexity int, input model.CreateUser) int
+		DeleteGroup         func(childComplexity int, input model.DeleteGroup) int
+		DeleteInstallation  func(childComplexity int, input model.DeleteInstallation) int
 		DeleteModule        func(childComplexity int, input model.DeleteModule) int
 		DeleteModuleVersion func(childComplexity int, input model.DeleteModuleVersion) int
+		DeleteNamespace     func(childComplexity int, input model.DeleteNamespace) int
+		DeleteUser          func(childComplexity int, input model.DeleteUser) int
+		UpdateGroup         func(childComplexity int, input model.UpdateGroup) int
+		UpdateInstallation  func(childComplexity int, input model.UpdateInstallation) int
 		UpdateModule        func(childComplexity int, input model.UpdateModule) int
 		UpdateModuleVersion func(childComplexity int, input model.UpdateModuleVersion) int
+		UpdateNamespace     func(childComplexity int, input model.UpdateNamespace) int
+		UpdateUser          func(childComplexity int, input model.UpdateUser) int
+	}
+
+	Namespace struct {
+		CreatedAt     func(childComplexity int) int
+		Groups        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) int
+		ID            func(childComplexity int) int
+		Name          func(childComplexity int) int
+		ResolvedUsers func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+		Users         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+	}
+
+	NamespaceConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	NamespaceEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 
 	PageInfo struct {
@@ -88,22 +176,87 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Module  func(childComplexity int, id int) int
-		Modules func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleOrder, where *ent.ModuleWhereInput) int
+		Groups         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) int
+		Installations  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstallationOrder, where *ent.InstallationWhereInput) int
+		ModuleVersions func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleVersionOrder, where *ent.ModuleVersionWhereInput) int
+		Modules        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleOrder, where *ent.ModuleWhereInput) int
+		Namespaces     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.NamespaceOrder, where *ent.NamespaceWhereInput) int
+		Node           func(childComplexity int, id int) int
+		User           func(childComplexity int) int
+		Users          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) int
+	}
+
+	User struct {
+		CreatedAt      func(childComplexity int) int
+		Groups         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) int
+		ID             func(childComplexity int) int
+		Name           func(childComplexity int) int
+		ResolvedGroups func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) int
+	}
+
+	UserConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	UserEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
 	}
 }
 
+type GroupResolver interface {
+	Users(ctx context.Context, obj *ent.Group, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
+	ResolvedUsers(ctx context.Context, obj *ent.Group, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
+
+	Children(ctx context.Context, obj *ent.Group, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) (*ent.GroupConnection, error)
+}
+type ModuleResolver interface {
+	LatestVersion(ctx context.Context, obj *ent.Module) (*ent.ModuleVersion, error)
+	Versions(ctx context.Context, obj *ent.Module, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleVersionOrder, where *ent.ModuleVersionWhereInput) (*ent.ModuleVersionConnection, error)
+}
+type ModuleVersionResolver interface {
+	Installations(ctx context.Context, obj *ent.ModuleVersion, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstallationOrder, where *ent.InstallationWhereInput) (*ent.InstallationConnection, error)
+}
 type MutationResolver interface {
+	CreateGroup(ctx context.Context, input model.CreateGroup) (*ent.Group, error)
+	UpdateGroup(ctx context.Context, input model.UpdateGroup) (*ent.Group, error)
+	DeleteGroup(ctx context.Context, input model.DeleteGroup) (int, error)
+	CreateInstallation(ctx context.Context, input model.CreateInstallation) (*ent.Installation, error)
+	UpdateInstallation(ctx context.Context, input model.UpdateInstallation) (*ent.Installation, error)
+	DeleteInstallation(ctx context.Context, input model.DeleteInstallation) (int, error)
 	CreateModule(ctx context.Context, input model.CreateModule) (*ent.Module, error)
 	UpdateModule(ctx context.Context, input model.UpdateModule) (*ent.Module, error)
 	DeleteModule(ctx context.Context, input model.DeleteModule) (int, error)
 	CreateModuleVersion(ctx context.Context, input model.CreateModuleVersion) (*ent.ModuleVersion, error)
 	UpdateModuleVersion(ctx context.Context, input model.UpdateModuleVersion) (*ent.ModuleVersion, error)
 	DeleteModuleVersion(ctx context.Context, input model.DeleteModuleVersion) (int, error)
+	CreateNamespace(ctx context.Context, input model.CreateNamespace) (*ent.Namespace, error)
+	UpdateNamespace(ctx context.Context, input model.UpdateNamespace) (*ent.Namespace, error)
+	DeleteNamespace(ctx context.Context, input model.DeleteNamespace) (int, error)
+	CreateUser(ctx context.Context, input model.CreateUser) (*ent.User, error)
+	UpdateUser(ctx context.Context, input model.UpdateUser) (*ent.User, error)
+	DeleteUser(ctx context.Context, input model.DeleteUser) (int, error)
+}
+type NamespaceResolver interface {
+	Groups(ctx context.Context, obj *ent.Namespace, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) (*ent.GroupConnection, error)
+	Users(ctx context.Context, obj *ent.Namespace, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
+	ResolvedUsers(ctx context.Context, obj *ent.Namespace, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
 }
 type QueryResolver interface {
+	Node(ctx context.Context, id int) (ent.Noder, error)
+	User(ctx context.Context) (*ent.User, error)
+	Groups(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) (*ent.GroupConnection, error)
+	Installations(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.InstallationOrder, where *ent.InstallationWhereInput) (*ent.InstallationConnection, error)
 	Modules(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleOrder, where *ent.ModuleWhereInput) (*ent.ModuleConnection, error)
-	Module(ctx context.Context, id int) (*ent.Module, error)
+	ModuleVersions(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ModuleVersionOrder, where *ent.ModuleVersionWhereInput) (*ent.ModuleVersionConnection, error)
+	Namespaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.NamespaceOrder, where *ent.NamespaceWhereInput) (*ent.NamespaceConnection, error)
+	Users(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.UserOrder, where *ent.UserWhereInput) (*ent.UserConnection, error)
+}
+type UserResolver interface {
+	Groups(ctx context.Context, obj *ent.User, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) (*ent.GroupConnection, error)
+	ResolvedGroups(ctx context.Context, obj *ent.User, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.GroupOrder, where *ent.GroupWhereInput) (*ent.GroupConnection, error)
 }
 
 type executableSchema struct {
@@ -120,6 +273,161 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Group.children":
+		if e.complexity.Group.Children == nil {
+			break
+		}
+
+		args, err := ec.field_Group_children_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Group.Children(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput)), true
+
+	case "Group.createdAt":
+		if e.complexity.Group.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Group.CreatedAt(childComplexity), true
+
+	case "Group.id":
+		if e.complexity.Group.ID == nil {
+			break
+		}
+
+		return e.complexity.Group.ID(childComplexity), true
+
+	case "Group.name":
+		if e.complexity.Group.Name == nil {
+			break
+		}
+
+		return e.complexity.Group.Name(childComplexity), true
+
+	case "Group.parent":
+		if e.complexity.Group.Parent == nil {
+			break
+		}
+
+		return e.complexity.Group.Parent(childComplexity), true
+
+	case "Group.resolvedUsers":
+		if e.complexity.Group.ResolvedUsers == nil {
+			break
+		}
+
+		args, err := ec.field_Group_resolvedUsers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Group.ResolvedUsers(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+
+	case "Group.users":
+		if e.complexity.Group.Users == nil {
+			break
+		}
+
+		args, err := ec.field_Group_users_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Group.Users(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+
+	case "GroupConnection.edges":
+		if e.complexity.GroupConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.GroupConnection.Edges(childComplexity), true
+
+	case "GroupConnection.pageInfo":
+		if e.complexity.GroupConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.GroupConnection.PageInfo(childComplexity), true
+
+	case "GroupConnection.totalCount":
+		if e.complexity.GroupConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.GroupConnection.TotalCount(childComplexity), true
+
+	case "GroupEdge.cursor":
+		if e.complexity.GroupEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.GroupEdge.Cursor(childComplexity), true
+
+	case "GroupEdge.node":
+		if e.complexity.GroupEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.GroupEdge.Node(childComplexity), true
+
+	case "Installation.createdAt":
+		if e.complexity.Installation.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Installation.CreatedAt(childComplexity), true
+
+	case "Installation.id":
+		if e.complexity.Installation.ID == nil {
+			break
+		}
+
+		return e.complexity.Installation.ID(childComplexity), true
+
+	case "Installation.moduleVersion":
+		if e.complexity.Installation.ModuleVersion == nil {
+			break
+		}
+
+		return e.complexity.Installation.ModuleVersion(childComplexity), true
+
+	case "InstallationConnection.edges":
+		if e.complexity.InstallationConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.InstallationConnection.Edges(childComplexity), true
+
+	case "InstallationConnection.pageInfo":
+		if e.complexity.InstallationConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.InstallationConnection.PageInfo(childComplexity), true
+
+	case "InstallationConnection.totalCount":
+		if e.complexity.InstallationConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.InstallationConnection.TotalCount(childComplexity), true
+
+	case "InstallationEdge.cursor":
+		if e.complexity.InstallationEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.InstallationEdge.Cursor(childComplexity), true
+
+	case "InstallationEdge.node":
+		if e.complexity.InstallationEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.InstallationEdge.Node(childComplexity), true
 
 	case "Module.createdAt":
 		if e.complexity.Module.CreatedAt == nil {
@@ -142,6 +450,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Module.ID(childComplexity), true
 
+	case "Module.latestVersion":
+		if e.complexity.Module.LatestVersion == nil {
+			break
+		}
+
+		return e.complexity.Module.LatestVersion(childComplexity), true
+
 	case "Module.name":
 		if e.complexity.Module.Name == nil {
 			break
@@ -154,7 +469,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			break
 		}
 
-		return e.complexity.Module.Versions(childComplexity), true
+		args, err := ec.field_Module_versions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Module.Versions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ModuleVersionOrder), args["where"].(*ent.ModuleVersionWhereInput)), true
 
 	case "ModuleConnection.edges":
 		if e.complexity.ModuleConnection.Edges == nil {
@@ -191,6 +511,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ModuleEdge.Node(childComplexity), true
 
+	case "ModuleVersion.createdAt":
+		if e.complexity.ModuleVersion.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersion.CreatedAt(childComplexity), true
+
 	case "ModuleVersion.id":
 		if e.complexity.ModuleVersion.ID == nil {
 			break
@@ -198,19 +525,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ModuleVersion.ID(childComplexity), true
 
-	case "ModuleVersion.source":
-		if e.complexity.ModuleVersion.Source == nil {
+	case "ModuleVersion.installations":
+		if e.complexity.ModuleVersion.Installations == nil {
 			break
 		}
 
-		return e.complexity.ModuleVersion.Source(childComplexity), true
+		args, err := ec.field_ModuleVersion_installations_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
 
-	case "ModuleVersion.version":
-		if e.complexity.ModuleVersion.Version == nil {
+		return e.complexity.ModuleVersion.Installations(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstallationOrder), args["where"].(*ent.InstallationWhereInput)), true
+
+	case "ModuleVersion.module":
+		if e.complexity.ModuleVersion.Module == nil {
 			break
 		}
 
-		return e.complexity.ModuleVersion.Version(childComplexity), true
+		return e.complexity.ModuleVersion.Module(childComplexity), true
+
+	case "ModuleVersionConnection.edges":
+		if e.complexity.ModuleVersionConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersionConnection.Edges(childComplexity), true
+
+	case "ModuleVersionConnection.pageInfo":
+		if e.complexity.ModuleVersionConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersionConnection.PageInfo(childComplexity), true
+
+	case "ModuleVersionConnection.totalCount":
+		if e.complexity.ModuleVersionConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersionConnection.TotalCount(childComplexity), true
+
+	case "ModuleVersionEdge.cursor":
+		if e.complexity.ModuleVersionEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersionEdge.Cursor(childComplexity), true
+
+	case "ModuleVersionEdge.node":
+		if e.complexity.ModuleVersionEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ModuleVersionEdge.Node(childComplexity), true
+
+	case "Mutation.createGroup":
+		if e.complexity.Mutation.CreateGroup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createGroup_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateGroup(childComplexity, args["input"].(model.CreateGroup)), true
+
+	case "Mutation.createInstallation":
+		if e.complexity.Mutation.CreateInstallation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createInstallation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateInstallation(childComplexity, args["input"].(model.CreateInstallation)), true
 
 	case "Mutation.createModule":
 		if e.complexity.Mutation.CreateModule == nil {
@@ -236,6 +627,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateModuleVersion(childComplexity, args["input"].(model.CreateModuleVersion)), true
 
+	case "Mutation.createNamespace":
+		if e.complexity.Mutation.CreateNamespace == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createNamespace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateNamespace(childComplexity, args["input"].(model.CreateNamespace)), true
+
+	case "Mutation.createUser":
+		if e.complexity.Mutation.CreateUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(model.CreateUser)), true
+
+	case "Mutation.deleteGroup":
+		if e.complexity.Mutation.DeleteGroup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteGroup_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteGroup(childComplexity, args["input"].(model.DeleteGroup)), true
+
+	case "Mutation.deleteInstallation":
+		if e.complexity.Mutation.DeleteInstallation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteInstallation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteInstallation(childComplexity, args["input"].(model.DeleteInstallation)), true
+
 	case "Mutation.deleteModule":
 		if e.complexity.Mutation.DeleteModule == nil {
 			break
@@ -260,6 +699,54 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteModuleVersion(childComplexity, args["input"].(model.DeleteModuleVersion)), true
 
+	case "Mutation.deleteNamespace":
+		if e.complexity.Mutation.DeleteNamespace == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteNamespace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteNamespace(childComplexity, args["input"].(model.DeleteNamespace)), true
+
+	case "Mutation.deleteUser":
+		if e.complexity.Mutation.DeleteUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteUser(childComplexity, args["input"].(model.DeleteUser)), true
+
+	case "Mutation.updateGroup":
+		if e.complexity.Mutation.UpdateGroup == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateGroup_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateGroup(childComplexity, args["input"].(model.UpdateGroup)), true
+
+	case "Mutation.updateInstallation":
+		if e.complexity.Mutation.UpdateInstallation == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateInstallation_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateInstallation(childComplexity, args["input"].(model.UpdateInstallation)), true
+
 	case "Mutation.updateModule":
 		if e.complexity.Mutation.UpdateModule == nil {
 			break
@@ -283,6 +770,122 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateModuleVersion(childComplexity, args["input"].(model.UpdateModuleVersion)), true
+
+	case "Mutation.updateNamespace":
+		if e.complexity.Mutation.UpdateNamespace == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateNamespace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateNamespace(childComplexity, args["input"].(model.UpdateNamespace)), true
+
+	case "Mutation.updateUser":
+		if e.complexity.Mutation.UpdateUser == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateUser_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateUser(childComplexity, args["input"].(model.UpdateUser)), true
+
+	case "Namespace.createdAt":
+		if e.complexity.Namespace.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Namespace.CreatedAt(childComplexity), true
+
+	case "Namespace.groups":
+		if e.complexity.Namespace.Groups == nil {
+			break
+		}
+
+		args, err := ec.field_Namespace_groups_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Namespace.Groups(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput)), true
+
+	case "Namespace.id":
+		if e.complexity.Namespace.ID == nil {
+			break
+		}
+
+		return e.complexity.Namespace.ID(childComplexity), true
+
+	case "Namespace.name":
+		if e.complexity.Namespace.Name == nil {
+			break
+		}
+
+		return e.complexity.Namespace.Name(childComplexity), true
+
+	case "Namespace.resolvedUsers":
+		if e.complexity.Namespace.ResolvedUsers == nil {
+			break
+		}
+
+		args, err := ec.field_Namespace_resolvedUsers_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Namespace.ResolvedUsers(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+
+	case "Namespace.users":
+		if e.complexity.Namespace.Users == nil {
+			break
+		}
+
+		args, err := ec.field_Namespace_users_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Namespace.Users(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+
+	case "NamespaceConnection.edges":
+		if e.complexity.NamespaceConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.NamespaceConnection.Edges(childComplexity), true
+
+	case "NamespaceConnection.pageInfo":
+		if e.complexity.NamespaceConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.NamespaceConnection.PageInfo(childComplexity), true
+
+	case "NamespaceConnection.totalCount":
+		if e.complexity.NamespaceConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.NamespaceConnection.TotalCount(childComplexity), true
+
+	case "NamespaceEdge.cursor":
+		if e.complexity.NamespaceEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.NamespaceEdge.Cursor(childComplexity), true
+
+	case "NamespaceEdge.node":
+		if e.complexity.NamespaceEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.NamespaceEdge.Node(childComplexity), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -312,17 +915,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
 
-	case "Query.module":
-		if e.complexity.Query.Module == nil {
+	case "Query.groups":
+		if e.complexity.Query.Groups == nil {
 			break
 		}
 
-		args, err := ec.field_Query_module_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_groups_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Module(childComplexity, args["id"].(int)), true
+		return e.complexity.Query.Groups(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput)), true
+
+	case "Query.installations":
+		if e.complexity.Query.Installations == nil {
+			break
+		}
+
+		args, err := ec.field_Query_installations_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Installations(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstallationOrder), args["where"].(*ent.InstallationWhereInput)), true
+
+	case "Query.moduleVersions":
+		if e.complexity.Query.ModuleVersions == nil {
+			break
+		}
+
+		args, err := ec.field_Query_moduleVersions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ModuleVersions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ModuleVersionOrder), args["where"].(*ent.ModuleVersionWhereInput)), true
 
 	case "Query.modules":
 		if e.complexity.Query.Modules == nil {
@@ -335,6 +962,129 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Modules(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ModuleOrder), args["where"].(*ent.ModuleWhereInput)), true
+
+	case "Query.namespaces":
+		if e.complexity.Query.Namespaces == nil {
+			break
+		}
+
+		args, err := ec.field_Query_namespaces_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Namespaces(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.NamespaceOrder), args["where"].(*ent.NamespaceWhereInput)), true
+
+	case "Query.node":
+		if e.complexity.Query.Node == nil {
+			break
+		}
+
+		args, err := ec.field_Query_node_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Node(childComplexity, args["id"].(int)), true
+
+	case "Query.user":
+		if e.complexity.Query.User == nil {
+			break
+		}
+
+		return e.complexity.Query.User(childComplexity), true
+
+	case "Query.users":
+		if e.complexity.Query.Users == nil {
+			break
+		}
+
+		args, err := ec.field_Query_users_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Users(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput)), true
+
+	case "User.createdAt":
+		if e.complexity.User.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.User.CreatedAt(childComplexity), true
+
+	case "User.groups":
+		if e.complexity.User.Groups == nil {
+			break
+		}
+
+		args, err := ec.field_User_groups_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.User.Groups(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput)), true
+
+	case "User.id":
+		if e.complexity.User.ID == nil {
+			break
+		}
+
+		return e.complexity.User.ID(childComplexity), true
+
+	case "User.name":
+		if e.complexity.User.Name == nil {
+			break
+		}
+
+		return e.complexity.User.Name(childComplexity), true
+
+	case "User.resolvedGroups":
+		if e.complexity.User.ResolvedGroups == nil {
+			break
+		}
+
+		args, err := ec.field_User_resolvedGroups_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.User.ResolvedGroups(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput)), true
+
+	case "UserConnection.edges":
+		if e.complexity.UserConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.UserConnection.Edges(childComplexity), true
+
+	case "UserConnection.pageInfo":
+		if e.complexity.UserConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.UserConnection.PageInfo(childComplexity), true
+
+	case "UserConnection.totalCount":
+		if e.complexity.UserConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.UserConnection.TotalCount(childComplexity), true
+
+	case "UserEdge.cursor":
+		if e.complexity.UserEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.UserEdge.Cursor(childComplexity), true
+
+	case "UserEdge.node":
+		if e.complexity.UserEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.UserEdge.Node(childComplexity), true
 
 	}
 	return 0, false
@@ -400,60 +1150,58 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphql", Input: `type Query {
-  modules(
-    after: Cursor
-    first: ID
-    before: Cursor
-    last: ID
-    orderBy: ModuleOrder
-    where: ModuleWhereInput
-  ): ModuleConnection
-
-  module(id: ID!): Module!
+	{Name: "graphql/schema/installations.graphql", Input: `type Installation implements Node {
+  id: ID!
+  moduleVersion: ModuleVersion!
+  createdAt: Time!
 }
 
-type Mutation {
-  # Module
-  createModule(input: CreateModule!): Module!
-  updateModule(input: UpdateModule!): Module!
-  deleteModule(input: DeleteModule!): ID!
-
-  # ModuleVersion
-  createModuleVersion(input: CreateModuleVersion!): ModuleVersion!
-  updateModuleVersion(input: UpdateModuleVersion!): ModuleVersion!
-  deleteModuleVersion(input: DeleteModuleVersion!): ID!
+type InstallationConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [InstallationEdge]
 }
 
-scalar Time
-scalar Cursor
+type InstallationEdge {
+  node: Installation
+  cursor: Cursor!
+}
 
-interface Node {
+enum InstallationOrderField {
+  CREATED_AT
+}
+
+input InstallationOrder {
+  direction: OrderDirection!
+  field: InstallationOrderField
+}
+
+input CreateInstallation {
+  moduleVersionId: ID!
+}
+
+input UpdateInstallation {
   id: ID!
 }
 
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: Cursor
-  endCursor: Cursor
+input DeleteInstallation {
+  id: ID!
 }
-
-enum OrderDirection {
-  ASC
-  DESC
-}
-
-##
-## Module
-##
-
-type Module implements Node {
+`, BuiltIn: false},
+	{Name: "graphql/schema/modules.graphql", Input: `type Module implements Node {
   id: ID!
   name: String!
   description: String!
   createdAt: Time
-  versions(id: ID, version: String): [ModuleVersion]!
+  latestVersion: ModuleVersion
+  versions(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleVersionOrder
+    where: ModuleVersionWhereInput
+  ): ModuleVersionConnection! @goField(forceResolver: true)
 }
 
 type ModuleConnection {
@@ -491,34 +1239,460 @@ input UpdateModule {
 input DeleteModule {
   id: ID!
 }
-
-##
-## ModuleVersion
-##
-
-type ModuleVersion {
+`, BuiltIn: false},
+	{Name: "graphql/schema/moduleVersions.graphql", Input: `type ModuleVersion implements Node {
   id: ID!
-  version: String!
-  source: String!
+  module: Module!
+  createdAt: Time!
+  installations(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: InstallationOrder
+    where: InstallationWhereInput
+  ): InstallationConnection! @goField(forceResolver: true)
+}
+
+type ModuleVersionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ModuleVersionEdge]
+}
+
+type ModuleVersionEdge {
+  node: ModuleVersion
+  cursor: Cursor!
+}
+
+enum ModuleVersionOrderField {
+  CREATED_AT
+  NAME
+}
+
+input ModuleVersionOrder {
+  direction: OrderDirection!
+  field: ModuleVersionOrderField
 }
 
 input CreateModuleVersion {
-  module: ID!
+  id: ID!
   version: String!
-  source: String!
 }
 
 input UpdateModuleVersion {
   id: ID!
-  version: String
-  source: String
 }
 
 input DeleteModuleVersion {
   id: ID!
 }
 `, BuiltIn: false},
-	{Name: "ent.graphql", Input: `"""
+	{Name: "graphql/schema/users.graphql", Input: `type User implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+  resolvedGroups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+}
+
+type UserConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [UserEdge]
+}
+
+type UserEdge {
+  node: User
+  cursor: Cursor!
+}
+
+enum UserOrderField {
+  CREATED_AT
+  NAME
+}
+
+input UserOrder {
+  direction: OrderDirection!
+  field: UserOrderField
+}
+
+input CreateUser {
+  name: String!
+}
+
+input UpdateUser {
+  id: ID!
+  name: String
+}
+
+input DeleteUser {
+  id: ID!
+}
+`, BuiltIn: false},
+	{Name: "graphql/schema/groups.graphql", Input: `type Group implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  resolvedUsers(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  parent: Group
+  children(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+}
+
+type GroupConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [GroupEdge]
+}
+
+type GroupEdge {
+  node: Group
+  cursor: Cursor!
+}
+
+enum GroupOrderField {
+  CREATED_AT
+  NAME
+}
+
+input GroupOrder {
+  direction: OrderDirection!
+  field: GroupOrderField
+}
+
+input CreateGroup {
+  name: String!
+}
+
+input UpdateGroup {
+  id: ID!
+  name: String
+  parent: ID
+  users: [ID]
+}
+
+input DeleteGroup {
+  id: ID!
+}
+
+input AddUserToGroup {
+  groupId: ID!
+  userId: ID!
+}
+`, BuiltIn: false},
+	{Name: "graphql/schema/namespaces.graphql", Input: `type Namespace implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  resolvedUsers(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+}
+
+type NamespaceConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [NamespaceEdge]
+}
+
+type NamespaceEdge {
+  node: Namespace
+  cursor: Cursor!
+}
+
+enum NamespaceOrderField {
+  CREATED_AT
+  NAME
+}
+
+input NamespaceOrder {
+  direction: OrderDirection!
+  field: NamespaceOrderField
+}
+
+input CreateNamespace {
+  name: String!
+}
+
+input UpdateNamespace {
+  id: ID!
+  name: String
+}
+
+input DeleteNamespace {
+  id: ID!
+}
+`, BuiltIn: false},
+	{Name: "graphql/schema/schema.graphql", Input: `type Query {
+  node(id: ID!): Node
+
+  user: User!
+
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection!
+
+  installations(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: InstallationOrder
+    where: InstallationWhereInput
+  ): InstallationConnection!
+
+  modules(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleOrder
+    where: ModuleWhereInput
+  ): ModuleConnection!
+
+  moduleVersions(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: ModuleVersionOrder
+    where: ModuleVersionWhereInput
+  ): ModuleVersionConnection!
+
+  namespaces(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: NamespaceOrder
+    where: NamespaceWhereInput
+  ): NamespaceConnection!
+
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection!
+}
+
+type Mutation {
+  # Groups
+  createGroup(input: CreateGroup!): Group!
+  updateGroup(input: UpdateGroup!): Group!
+  deleteGroup(input: DeleteGroup!): ID!
+  # addUsersToGroup(input: AddUsersToGroup!): Group!
+  # removeUsersFromGroup(input: RemoveUsersFromGroup!): Group!
+  # setGroupParent(input: SetGroupParent!): Group!
+
+  # Installation
+  createInstallation(input: CreateInstallation!): Installation!
+  updateInstallation(input: UpdateInstallation!): Installation!
+  deleteInstallation(input: DeleteInstallation!): ID!
+
+  # Module
+  createModule(input: CreateModule!): Module!
+  updateModule(input: UpdateModule!): Module!
+  deleteModule(input: DeleteModule!): ID!
+
+  # ModuleVersion
+  createModuleVersion(input: CreateModuleVersion!): ModuleVersion!
+  updateModuleVersion(input: UpdateModuleVersion!): ModuleVersion!
+  deleteModuleVersion(input: DeleteModuleVersion!): ID!
+
+  # Namespace
+  createNamespace(input: CreateNamespace!): Namespace!
+  updateNamespace(input: UpdateNamespace!): Namespace!
+  deleteNamespace(input: DeleteNamespace!): ID!
+
+  # User
+  createUser(input: CreateUser!): User!
+  updateUser(input: UpdateUser!): User!
+  deleteUser(input: DeleteUser!): ID!
+}
+
+scalar Time
+scalar Cursor
+
+directive @goField(forceResolver: Boolean, name: String) on INPUT_FIELD_DEFINITION
+  | FIELD_DEFINITION
+
+interface Node {
+  id: ID!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: Cursor
+  endCursor: Cursor
+}
+
+enum OrderDirection {
+  ASC
+  DESC
+}
+`, BuiltIn: false},
+	{Name: "graphql/schema/ent.graphql", Input: `"""
+GroupWhereInput is used for filtering Group objects.
+Input was generated by ent.
+"""
+input GroupWhereInput {
+  not: GroupWhereInput
+  and: [GroupWhereInput!]
+  or: [GroupWhereInput!]
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """users edge predicates"""
+  hasUsers: Boolean
+  hasUsersWith: [UserWhereInput!]
+  
+  """parent edge predicates"""
+  hasParent: Boolean
+  hasParentWith: [GroupWhereInput!]
+  
+  """children edge predicates"""
+  hasChildren: Boolean
+  hasChildrenWith: [GroupWhereInput!]
+  
+  """namespaces edge predicates"""
+  hasNamespaces: Boolean
+  hasNamespacesWith: [NamespaceWhereInput!]
+}
+
+"""
+InstallationWhereInput is used for filtering Installation objects.
+Input was generated by ent.
+"""
+input InstallationWhereInput {
+  not: InstallationWhereInput
+  and: [InstallationWhereInput!]
+  or: [InstallationWhereInput!]
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """moduleVersion edge predicates"""
+  hasModuleVersion: Boolean
+  hasModuleVersionWith: [ModuleVersionWhereInput!]
+}
+
+"""
 ModuleWhereInput is used for filtering Module objects.
 Input was generated by ent.
 """
@@ -577,6 +1751,10 @@ input ModuleWhereInput {
   idLT: ID
   idLTE: ID
   
+  """namespace edge predicates"""
+  hasNamespace: Boolean
+  hasNamespaceWith: [NamespaceWhereInput!]
+  
   """versions edge predicates"""
   hasVersions: Boolean
   hasVersionsWith: [ModuleVersionWhereInput!]
@@ -590,36 +1768,6 @@ input ModuleVersionWhereInput {
   not: ModuleVersionWhereInput
   and: [ModuleVersionWhereInput!]
   or: [ModuleVersionWhereInput!]
-  
-  """version field predicates"""
-  version: String
-  versionNEQ: String
-  versionIn: [String!]
-  versionNotIn: [String!]
-  versionGT: String
-  versionGTE: String
-  versionLT: String
-  versionLTE: String
-  versionContains: String
-  versionHasPrefix: String
-  versionHasSuffix: String
-  versionEqualFold: String
-  versionContainsFold: String
-  
-  """source field predicates"""
-  source: String
-  sourceNEQ: String
-  sourceIn: [String!]
-  sourceNotIn: [String!]
-  sourceGT: String
-  sourceGTE: String
-  sourceLT: String
-  sourceLTE: String
-  sourceContains: String
-  sourceHasPrefix: String
-  sourceHasSuffix: String
-  sourceEqualFold: String
-  sourceContainsFold: String
   
   """created_at field predicates"""
   createdAt: Time
@@ -644,6 +1792,124 @@ input ModuleVersionWhereInput {
   """module edge predicates"""
   hasModule: Boolean
   hasModuleWith: [ModuleWhereInput!]
+  
+  """installations edge predicates"""
+  hasInstallations: Boolean
+  hasInstallationsWith: [InstallationWhereInput!]
+}
+
+"""
+NamespaceWhereInput is used for filtering Namespace objects.
+Input was generated by ent.
+"""
+input NamespaceWhereInput {
+  not: NamespaceWhereInput
+  and: [NamespaceWhereInput!]
+  or: [NamespaceWhereInput!]
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """groups edge predicates"""
+  hasGroups: Boolean
+  hasGroupsWith: [GroupWhereInput!]
+  
+  """users edge predicates"""
+  hasUsers: Boolean
+  hasUsersWith: [UserWhereInput!]
+  
+  """modules edge predicates"""
+  hasModules: Boolean
+  hasModulesWith: [ModuleWhereInput!]
+  
+  """installations edge predicates"""
+  hasInstallations: Boolean
+  hasInstallationsWith: [InstallationWhereInput!]
+}
+
+"""
+UserWhereInput is used for filtering User objects.
+Input was generated by ent.
+"""
+input UserWhereInput {
+  not: UserWhereInput
+  and: [UserWhereInput!]
+  or: [UserWhereInput!]
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """groups edge predicates"""
+  hasGroups: Boolean
+  hasGroupsWith: [GroupWhereInput!]
+  
+  """namespaces edge predicates"""
+  hasNamespaces: Boolean
+  hasNamespacesWith: [NamespaceWhereInput!]
 }
 `, BuiltIn: false},
 }
@@ -652,6 +1918,336 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Group_children_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.GroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.GroupWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Group_resolvedUsers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.UserOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.UserWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Group_users_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.UserOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.UserWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_ModuleVersion_installations_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.InstallationOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOInstallationOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.InstallationWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Module_versions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ModuleVersionOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOModuleVersionOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.ModuleVersionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOModuleVersionWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateGroup
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateGroup(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createInstallation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateInstallation
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateInstallation(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_createModuleVersion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -675,6 +2271,66 @@ func (ec *executionContext) field_Mutation_createModule_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateModule2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateModule(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createNamespace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateNamespace
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateNamespace(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateUser
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteGroup
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteGroup(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteInstallation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteInstallation
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteInstallation(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -713,6 +2369,66 @@ func (ec *executionContext) field_Mutation_deleteModule_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteNamespace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteNamespace
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteNamespace(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteUser
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateGroup_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateGroup
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateGroup(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateInstallation_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateInstallation
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateInstallation(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateModuleVersion_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -743,6 +2459,216 @@ func (ec *executionContext) field_Mutation_updateModule_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateNamespace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateNamespace
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateNamespace(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateUser
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateUser(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Namespace_groups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.GroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.GroupWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Namespace_resolvedUsers_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.UserOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.UserWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Namespace_users_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.UserOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.UserWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -758,18 +2684,183 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_module_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_groups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.GroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.GroupWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_installations_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.InstallationOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOInstallationOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.InstallationWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_moduleVersions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ModuleVersionOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOModuleVersionOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.ModuleVersionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOModuleVersionWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
 	return args, nil
 }
 
@@ -788,7 +2879,7 @@ func (ec *executionContext) field_Query_modules_args(ctx context.Context, rawArg
 	var arg1 *int
 	if tmp, ok := rawArgs["first"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOID2ᚖint(ctx, tmp)
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -806,7 +2897,7 @@ func (ec *executionContext) field_Query_modules_args(ctx context.Context, rawArg
 	var arg3 *int
 	if tmp, ok := rawArgs["last"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOID2ᚖint(ctx, tmp)
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -825,6 +2916,261 @@ func (ec *executionContext) field_Query_modules_args(ctx context.Context, rawArg
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg5, err = ec.unmarshalOModuleWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_namespaces_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.NamespaceOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalONamespaceOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.NamespaceWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalONamespaceWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_users_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.UserOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.UserWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_User_groups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.GroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.GroupWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_User_resolvedGroups_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.GroupOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.GroupWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -870,6 +3216,709 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _Group_id(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_name(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_users(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Group_users_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().Users(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.UserConnection)
+	fc.Result = res
+	return ec.marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_resolvedUsers(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Group_resolvedUsers_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().ResolvedUsers(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.UserConnection)
+	fc.Result = res
+	return ec.marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_parent(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Parent(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Group)
+	fc.Result = res
+	return ec.marshalOGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Group_children(ctx context.Context, field graphql.CollectedField, obj *ent.Group) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Group",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Group_children_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().Children(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GroupConnection)
+	fc.Result = res
+	return ec.marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GroupConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.GroupConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GroupConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GroupConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.GroupConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GroupConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GroupConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.GroupConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GroupConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.GroupEdge)
+	fc.Result = res
+	return ec.marshalOGroupEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GroupEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.GroupEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GroupEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Group)
+	fc.Result = res
+	return ec.marshalOGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _GroupEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.GroupEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "GroupEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Installation_id(ctx context.Context, field graphql.CollectedField, obj *ent.Installation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Installation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Installation_moduleVersion(ctx context.Context, field graphql.CollectedField, obj *ent.Installation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Installation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ModuleVersion(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ModuleVersion)
+	fc.Result = res
+	return ec.marshalNModuleVersion2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Installation_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Installation) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Installation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstallationConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.InstallationConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstallationConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstallationConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.InstallationConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstallationConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstallationConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.InstallationConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstallationConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.InstallationEdge)
+	fc.Result = res
+	return ec.marshalOInstallationEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstallationEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.InstallationEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstallationEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Installation)
+	fc.Result = res
+	return ec.marshalOInstallation2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _InstallationEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.InstallationEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "InstallationEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Module_id(ctx context.Context, field graphql.CollectedField, obj *ent.Module) (ret graphql.Marshaler) {
 	defer func() {
@@ -1008,6 +4057,38 @@ func (ec *executionContext) _Module_createdAt(ctx context.Context, field graphql
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Module_latestVersion(ctx context.Context, field graphql.CollectedField, obj *ent.Module) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Module",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Module().LatestVersion(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ModuleVersion)
+	fc.Result = res
+	return ec.marshalOModuleVersion2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Module_versions(ctx context.Context, field graphql.CollectedField, obj *ent.Module) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1020,13 +4101,20 @@ func (ec *executionContext) _Module_versions(ctx context.Context, field graphql.
 		Field:      field,
 		Args:       nil,
 		IsMethod:   true,
-		IsResolver: false,
+		IsResolver: true,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Module_versions_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Versions(ctx)
+		return ec.resolvers.Module().Versions(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ModuleVersionOrder), args["where"].(*ent.ModuleVersionWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1038,9 +4126,9 @@ func (ec *executionContext) _Module_versions(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*ent.ModuleVersion)
+	res := resTmp.(*ent.ModuleVersionConnection)
 	fc.Result = res
-	return ec.marshalNModuleVersion2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx, field.Selections, res)
+	return ec.marshalNModuleVersionConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ModuleConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleConnection) (ret graphql.Marshaler) {
@@ -1247,7 +4335,7 @@ func (ec *executionContext) _ModuleVersion_id(ctx context.Context, field graphql
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ModuleVersion_version(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersion) (ret graphql.Marshaler) {
+func (ec *executionContext) _ModuleVersion_module(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersion) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1258,14 +4346,14 @@ func (ec *executionContext) _ModuleVersion_version(ctx context.Context, field gr
 		Object:     "ModuleVersion",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
+		IsMethod:   true,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Version, nil
+		return obj.Module(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1277,12 +4365,12 @@ func (ec *executionContext) _ModuleVersion_version(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*ent.Module)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNModule2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModule(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _ModuleVersion_source(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersion) (ret graphql.Marshaler) {
+func (ec *executionContext) _ModuleVersion_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersion) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1300,7 +4388,7 @@ func (ec *executionContext) _ModuleVersion_source(ctx context.Context, field gra
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Source, nil
+		return obj.CreatedAt, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1312,9 +4400,472 @@ func (ec *executionContext) _ModuleVersion_source(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(time.Time)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersion_installations(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersion) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersion",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_ModuleVersion_installations_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ModuleVersion().Installations(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstallationOrder), args["where"].(*ent.InstallationWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.InstallationConnection)
+	fc.Result = res
+	return ec.marshalNInstallationConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersionConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersionConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersionConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ModuleVersionEdge)
+	fc.Result = res
+	return ec.marshalOModuleVersionEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersionEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersionEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersionEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ModuleVersion)
+	fc.Result = res
+	return ec.marshalOModuleVersion2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ModuleVersionEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ModuleVersionEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ModuleVersionEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createGroup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createGroup_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateGroup(rctx, args["input"].(model.CreateGroup))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Group)
+	fc.Result = res
+	return ec.marshalNGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateGroup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateGroup_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateGroup(rctx, args["input"].(model.UpdateGroup))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Group)
+	fc.Result = res
+	return ec.marshalNGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteGroup(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteGroup_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteGroup(rctx, args["input"].(model.DeleteGroup))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createInstallation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createInstallation_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateInstallation(rctx, args["input"].(model.CreateInstallation))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Installation)
+	fc.Result = res
+	return ec.marshalNInstallation2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateInstallation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateInstallation_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateInstallation(rctx, args["input"].(model.UpdateInstallation))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Installation)
+	fc.Result = res
+	return ec.marshalNInstallation2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteInstallation(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteInstallation_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteInstallation(rctx, args["input"].(model.DeleteInstallation))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createModule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1569,6 +5120,655 @@ func (ec *executionContext) _Mutation_deleteModuleVersion(ctx context.Context, f
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createNamespace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createNamespace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateNamespace(rctx, args["input"].(model.CreateNamespace))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Namespace)
+	fc.Result = res
+	return ec.marshalNNamespace2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateNamespace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateNamespace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateNamespace(rctx, args["input"].(model.UpdateNamespace))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Namespace)
+	fc.Result = res
+	return ec.marshalNNamespace2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteNamespace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteNamespace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteNamespace(rctx, args["input"].(model.DeleteNamespace))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateUser(rctx, args["input"].(model.CreateUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateUser(rctx, args["input"].(model.UpdateUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteUser_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteUser(rctx, args["input"].(model.DeleteUser))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_id(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_name(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_groups(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Namespace_groups_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Namespace().Groups(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GroupConnection)
+	fc.Result = res
+	return ec.marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_users(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Namespace_users_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Namespace().Users(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.UserConnection)
+	fc.Result = res
+	return ec.marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Namespace_resolvedUsers(ctx context.Context, field graphql.CollectedField, obj *ent.Namespace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Namespace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Namespace_resolvedUsers_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Namespace().ResolvedUsers(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.UserConnection)
+	fc.Result = res
+	return ec.marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NamespaceConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.NamespaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NamespaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NamespaceConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.NamespaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NamespaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NamespaceConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.NamespaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NamespaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.NamespaceEdge)
+	fc.Result = res
+	return ec.marshalONamespaceEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NamespaceEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.NamespaceEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NamespaceEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Namespace)
+	fc.Result = res
+	return ec.marshalONamespace2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _NamespaceEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.NamespaceEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "NamespaceEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *ent.PageInfo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1703,6 +5903,164 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	return ec.marshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_node_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Node(rctx, args["id"].(int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(ent.Noder)
+	fc.Result = res
+	return ec.marshalONode2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNoder(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_user(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().User(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalNUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_groups(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_groups_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Groups(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GroupConnection)
+	fc.Result = res
+	return ec.marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_installations(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_installations_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Installations(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.InstallationOrder), args["where"].(*ent.InstallationWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.InstallationConnection)
+	fc.Result = res
+	return ec.marshalNInstallationConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_modules(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1735,14 +6093,17 @@ func (ec *executionContext) _Query_modules(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(*ent.ModuleConnection)
 	fc.Result = res
-	return ec.marshalOModuleConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleConnection(ctx, field.Selections, res)
+	return ec.marshalNModuleConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Query_module(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+func (ec *executionContext) _Query_moduleVersions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1759,7 +6120,7 @@ func (ec *executionContext) _Query_module(ctx context.Context, field graphql.Col
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Query_module_args(ctx, rawArgs)
+	args, err := ec.field_Query_moduleVersions_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -1767,7 +6128,7 @@ func (ec *executionContext) _Query_module(ctx context.Context, field graphql.Col
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Module(rctx, args["id"].(int))
+		return ec.resolvers.Query().ModuleVersions(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ModuleVersionOrder), args["where"].(*ent.ModuleVersionWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1779,9 +6140,93 @@ func (ec *executionContext) _Query_module(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.Module)
+	res := resTmp.(*ent.ModuleVersionConnection)
 	fc.Result = res
-	return ec.marshalNModule2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModule(ctx, field.Selections, res)
+	return ec.marshalNModuleVersionConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_namespaces(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_namespaces_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Namespaces(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.NamespaceOrder), args["where"].(*ent.NamespaceWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.NamespaceConnection)
+	fc.Result = res
+	return ec.marshalNNamespaceConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_users(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_users_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Users(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.UserOrder), args["where"].(*ent.UserWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.UserConnection)
+	fc.Result = res
+	return ec.marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -1853,6 +6298,361 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	res := resTmp.(*introspection.Schema)
 	fc.Result = res
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_id(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_name(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(time.Time)
+	fc.Result = res
+	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_groups(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_User_groups_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().Groups(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GroupConnection)
+	fc.Result = res
+	return ec.marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _User_resolvedGroups(ctx context.Context, field graphql.CollectedField, obj *ent.User) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_User_resolvedGroups_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().ResolvedGroups(rctx, obj, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.GroupOrder), args["where"].(*ent.GroupWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.GroupConnection)
+	fc.Result = res
+	return ec.marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.UserConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.UserConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.UserConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.UserEdge)
+	fc.Result = res
+	return ec.marshalOUserEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.UserEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UserEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.UserEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UserEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐCursor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
@@ -2977,6 +7777,83 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAddUserToGroup(ctx context.Context, obj interface{}) (model.AddUserToGroup, error) {
+	var it model.AddUserToGroup
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "groupId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("groupId"))
+			it.GroupID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userId"))
+			it.UserID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateGroup(ctx context.Context, obj interface{}) (model.CreateGroup, error) {
+	var it model.CreateGroup
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateInstallation(ctx context.Context, obj interface{}) (model.CreateInstallation, error) {
+	var it model.CreateInstallation
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "moduleVersionId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("moduleVersionId"))
+			it.ModuleVersionID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateModule(ctx context.Context, obj interface{}) (model.CreateModule, error) {
 	var it model.CreateModule
 	asMap := map[string]interface{}{}
@@ -3017,11 +7894,11 @@ func (ec *executionContext) unmarshalInputCreateModuleVersion(ctx context.Contex
 
 	for k, v := range asMap {
 		switch k {
-		case "module":
+		case "id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("module"))
-			it.Module, err = ec.unmarshalNID2int(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3033,11 +7910,95 @@ func (ec *executionContext) unmarshalInputCreateModuleVersion(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "source":
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateNamespace(ctx context.Context, obj interface{}) (model.CreateNamespace, error) {
+	var it model.CreateNamespace
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
-			it.Source, err = ec.unmarshalNString2string(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateUser(ctx context.Context, obj interface{}) (model.CreateUser, error) {
+	var it model.CreateUser
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteGroup(ctx context.Context, obj interface{}) (model.DeleteGroup, error) {
+	var it model.DeleteGroup
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteInstallation(ctx context.Context, obj interface{}) (model.DeleteInstallation, error) {
+	var it model.DeleteInstallation
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3093,6 +8054,632 @@ func (ec *executionContext) unmarshalInputDeleteModuleVersion(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteNamespace(ctx context.Context, obj interface{}) (model.DeleteNamespace, error) {
+	var it model.DeleteNamespace
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteUser(ctx context.Context, obj interface{}) (model.DeleteUser, error) {
+	var it model.DeleteUser
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGroupOrder(ctx context.Context, obj interface{}) (ent.GroupOrder, error) {
+	var it ent.GroupOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOGroupOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputGroupWhereInput(ctx context.Context, obj interface{}) (ent.GroupWhereInput, error) {
+	var it ent.GroupWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasUsers":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUsers"))
+			it.HasUsers, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasUsersWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUsersWith"))
+			it.HasUsersWith, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParent":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
+			it.HasParent, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParentWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentWith"))
+			it.HasParentWith, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasChildren":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasChildren"))
+			it.HasChildren, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasChildrenWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasChildrenWith"))
+			it.HasChildrenWith, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasNamespaces":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespaces"))
+			it.HasNamespaces, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasNamespacesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespacesWith"))
+			it.HasNamespacesWith, err = ec.unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInstallationOrder(ctx context.Context, obj interface{}) (ent.InstallationOrder, error) {
+	var it ent.InstallationOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOInstallationOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputInstallationWhereInput(ctx context.Context, obj interface{}) (ent.InstallationWhereInput, error) {
+	var it ent.InstallationWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOInstallationWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOInstallationWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasModuleVersion":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasModuleVersion"))
+			it.HasModuleVersion, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasModuleVersionWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasModuleVersionWith"))
+			it.HasModuleVersionWith, err = ec.unmarshalOModuleVersionWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputModuleOrder(ctx context.Context, obj interface{}) (ent.ModuleOrder, error) {
 	var it ent.ModuleOrder
 	asMap := map[string]interface{}{}
@@ -3115,6 +8702,37 @@ func (ec *executionContext) unmarshalInputModuleOrder(ctx context.Context, obj i
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
 			it.Field, err = ec.unmarshalOModuleOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputModuleVersionOrder(ctx context.Context, obj interface{}) (ent.ModuleVersionOrder, error) {
+	var it ent.ModuleVersionOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOModuleVersionOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrderField(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3154,214 +8772,6 @@ func (ec *executionContext) unmarshalInputModuleVersionWhereInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
 			it.Or, err = ec.unmarshalOModuleVersionWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "version":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("version"))
-			it.Version, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionNEQ"))
-			it.VersionNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionIn"))
-			it.VersionIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionNotIn"))
-			it.VersionNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionGT"))
-			it.VersionGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionGTE"))
-			it.VersionGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionLT"))
-			it.VersionLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionLTE"))
-			it.VersionLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionContains"))
-			it.VersionContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionHasPrefix"))
-			it.VersionHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionHasSuffix"))
-			it.VersionHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionEqualFold"))
-			it.VersionEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "versionContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("versionContainsFold"))
-			it.VersionContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "source":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
-			it.Source, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceNEQ"))
-			it.SourceNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIn"))
-			it.SourceIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceNotIn"))
-			it.SourceNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceGT"))
-			it.SourceGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceGTE"))
-			it.SourceGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceLT"))
-			it.SourceLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceLTE"))
-			it.SourceLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceContains"))
-			it.SourceContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceHasPrefix"))
-			it.SourceHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceHasSuffix"))
-			it.SourceHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceEqualFold"))
-			it.SourceEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "sourceContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceContainsFold"))
-			it.SourceContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3506,6 +8916,22 @@ func (ec *executionContext) unmarshalInputModuleVersionWhereInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasModuleWith"))
 			it.HasModuleWith, err = ec.unmarshalOModuleWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasInstallations":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInstallations"))
+			it.HasInstallations, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasInstallationsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInstallationsWith"))
+			it.HasInstallationsWith, err = ec.unmarshalOInstallationWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3884,6 +9310,22 @@ func (ec *executionContext) unmarshalInputModuleWhereInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
+		case "hasNamespace":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespace"))
+			it.HasNamespace, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasNamespaceWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespaceWith"))
+			it.HasNamespaceWith, err = ec.unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "hasVersions":
 			var err error
 
@@ -3897,6 +9339,442 @@ func (ec *executionContext) unmarshalInputModuleWhereInput(ctx context.Context, 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasVersionsWith"))
 			it.HasVersionsWith, err = ec.unmarshalOModuleVersionWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNamespaceOrder(ctx context.Context, obj interface{}) (ent.NamespaceOrder, error) {
+	var it ent.NamespaceOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalONamespaceOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputNamespaceWhereInput(ctx context.Context, obj interface{}) (ent.NamespaceWhereInput, error) {
+	var it ent.NamespaceWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalONamespaceWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasGroups":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasGroups"))
+			it.HasGroups, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasGroupsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasGroupsWith"))
+			it.HasGroupsWith, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasUsers":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUsers"))
+			it.HasUsers, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasUsersWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasUsersWith"))
+			it.HasUsersWith, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasModules":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasModules"))
+			it.HasModules, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasModulesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasModulesWith"))
+			it.HasModulesWith, err = ec.unmarshalOModuleWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasInstallations":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInstallations"))
+			it.HasInstallations, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasInstallationsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasInstallationsWith"))
+			it.HasInstallationsWith, err = ec.unmarshalOInstallationWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateGroup(ctx context.Context, obj interface{}) (model.UpdateGroup, error) {
+	var it model.UpdateGroup
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parent":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent"))
+			it.Parent, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "users":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("users"))
+			it.Users, err = ec.unmarshalOID2ᚕᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateInstallation(ctx context.Context, obj interface{}) (model.UpdateInstallation, error) {
+	var it model.UpdateInstallation
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3962,19 +9840,399 @@ func (ec *executionContext) unmarshalInputUpdateModuleVersion(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "version":
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateNamespace(ctx context.Context, obj interface{}) (model.UpdateNamespace, error) {
+	var it model.UpdateNamespace
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("version"))
-			it.Version, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "source":
+		case "name":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("source"))
-			it.Source, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateUser(ctx context.Context, obj interface{}) (model.UpdateUser, error) {
+	var it model.UpdateUser
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserOrder(ctx context.Context, obj interface{}) (ent.UserOrder, error) {
+	var it ent.UserOrder
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "direction":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("direction"))
+			it.Direction, err = ec.unmarshalNOrderDirection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐOrderDirection(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "field":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("field"))
+			it.Field, err = ec.unmarshalOUserOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrderField(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserWhereInput(ctx context.Context, obj interface{}) (ent.UserWhereInput, error) {
+	var it ent.UserWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasGroups":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasGroups"))
+			it.HasGroups, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasGroupsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasGroupsWith"))
+			it.HasGroupsWith, err = ec.unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasNamespaces":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespaces"))
+			it.HasNamespaces, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasNamespacesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasNamespacesWith"))
+			it.HasNamespacesWith, err = ec.unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3992,11 +10250,36 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 	switch obj := (obj).(type) {
 	case nil:
 		return graphql.Null
+	case *ent.Installation:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Installation(ctx, sel, obj)
 	case *ent.Module:
 		if obj == nil {
 			return graphql.Null
 		}
 		return ec._Module(ctx, sel, obj)
+	case *ent.ModuleVersion:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ModuleVersion(ctx, sel, obj)
+	case *ent.User:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._User(ctx, sel, obj)
+	case *ent.Group:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Group(ctx, sel, obj)
+	case *ent.Namespace:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Namespace(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -4005,6 +10288,265 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var groupImplementors = []string{"Group", "Node"}
+
+func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, obj *ent.Group) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, groupImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Group")
+		case "id":
+			out.Values[i] = ec._Group_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Group_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			out.Values[i] = ec._Group_createdAt(ctx, field, obj)
+		case "users":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Group_users(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "resolvedUsers":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Group_resolvedUsers(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "parent":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Group_parent(ctx, field, obj)
+				return res
+			})
+		case "children":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Group_children(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var groupConnectionImplementors = []string{"GroupConnection"}
+
+func (ec *executionContext) _GroupConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.GroupConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, groupConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GroupConnection")
+		case "totalCount":
+			out.Values[i] = ec._GroupConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._GroupConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._GroupConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var groupEdgeImplementors = []string{"GroupEdge"}
+
+func (ec *executionContext) _GroupEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.GroupEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, groupEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("GroupEdge")
+		case "node":
+			out.Values[i] = ec._GroupEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._GroupEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var installationImplementors = []string{"Installation", "Node"}
+
+func (ec *executionContext) _Installation(ctx context.Context, sel ast.SelectionSet, obj *ent.Installation) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, installationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Installation")
+		case "id":
+			out.Values[i] = ec._Installation_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "moduleVersion":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Installation_moduleVersion(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdAt":
+			out.Values[i] = ec._Installation_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var installationConnectionImplementors = []string{"InstallationConnection"}
+
+func (ec *executionContext) _InstallationConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.InstallationConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, installationConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("InstallationConnection")
+		case "totalCount":
+			out.Values[i] = ec._InstallationConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._InstallationConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._InstallationConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var installationEdgeImplementors = []string{"InstallationEdge"}
+
+func (ec *executionContext) _InstallationEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.InstallationEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, installationEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("InstallationEdge")
+		case "node":
+			out.Values[i] = ec._InstallationEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._InstallationEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var moduleImplementors = []string{"Module", "Node"}
 
@@ -4034,6 +10576,17 @@ func (ec *executionContext) _Module(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "createdAt":
 			out.Values[i] = ec._Module_createdAt(ctx, field, obj)
+		case "latestVersion":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Module_latestVersion(ctx, field, obj)
+				return res
+			})
 		case "versions":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -4122,7 +10675,7 @@ func (ec *executionContext) _ModuleEdge(ctx context.Context, sel ast.SelectionSe
 	return out
 }
 
-var moduleVersionImplementors = []string{"ModuleVersion"}
+var moduleVersionImplementors = []string{"ModuleVersion", "Node"}
 
 func (ec *executionContext) _ModuleVersion(ctx context.Context, sel ast.SelectionSet, obj *ent.ModuleVersion) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, moduleVersionImplementors)
@@ -4136,15 +10689,101 @@ func (ec *executionContext) _ModuleVersion(ctx context.Context, sel ast.Selectio
 		case "id":
 			out.Values[i] = ec._ModuleVersion_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
-				invalids++
+				atomic.AddUint32(&invalids, 1)
 			}
-		case "version":
-			out.Values[i] = ec._ModuleVersion_version(ctx, field, obj)
+		case "module":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ModuleVersion_module(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdAt":
+			out.Values[i] = ec._ModuleVersion_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "installations":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ModuleVersion_installations(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var moduleVersionConnectionImplementors = []string{"ModuleVersionConnection"}
+
+func (ec *executionContext) _ModuleVersionConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ModuleVersionConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, moduleVersionConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ModuleVersionConnection")
+		case "totalCount":
+			out.Values[i] = ec._ModuleVersionConnection_totalCount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "source":
-			out.Values[i] = ec._ModuleVersion_source(ctx, field, obj)
+		case "pageInfo":
+			out.Values[i] = ec._ModuleVersionConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._ModuleVersionConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var moduleVersionEdgeImplementors = []string{"ModuleVersionEdge"}
+
+func (ec *executionContext) _ModuleVersionEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ModuleVersionEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, moduleVersionEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ModuleVersionEdge")
+		case "node":
+			out.Values[i] = ec._ModuleVersionEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ModuleVersionEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4174,6 +10813,36 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createGroup":
+			out.Values[i] = ec._Mutation_createGroup(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateGroup":
+			out.Values[i] = ec._Mutation_updateGroup(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteGroup":
+			out.Values[i] = ec._Mutation_deleteGroup(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createInstallation":
+			out.Values[i] = ec._Mutation_createInstallation(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateInstallation":
+			out.Values[i] = ec._Mutation_updateInstallation(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteInstallation":
+			out.Values[i] = ec._Mutation_deleteInstallation(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createModule":
 			out.Values[i] = ec._Mutation_createModule(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -4201,6 +10870,175 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteModuleVersion":
 			out.Values[i] = ec._Mutation_deleteModuleVersion(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createNamespace":
+			out.Values[i] = ec._Mutation_createNamespace(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateNamespace":
+			out.Values[i] = ec._Mutation_updateNamespace(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteNamespace":
+			out.Values[i] = ec._Mutation_deleteNamespace(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createUser":
+			out.Values[i] = ec._Mutation_createUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateUser":
+			out.Values[i] = ec._Mutation_updateUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteUser":
+			out.Values[i] = ec._Mutation_deleteUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var namespaceImplementors = []string{"Namespace", "Node"}
+
+func (ec *executionContext) _Namespace(ctx context.Context, sel ast.SelectionSet, obj *ent.Namespace) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, namespaceImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Namespace")
+		case "id":
+			out.Values[i] = ec._Namespace_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Namespace_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			out.Values[i] = ec._Namespace_createdAt(ctx, field, obj)
+		case "groups":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Namespace_groups(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "users":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Namespace_users(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "resolvedUsers":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Namespace_resolvedUsers(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var namespaceConnectionImplementors = []string{"NamespaceConnection"}
+
+func (ec *executionContext) _NamespaceConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.NamespaceConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, namespaceConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NamespaceConnection")
+		case "totalCount":
+			out.Values[i] = ec._NamespaceConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._NamespaceConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._NamespaceConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var namespaceEdgeImplementors = []string{"NamespaceEdge"}
+
+func (ec *executionContext) _NamespaceEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.NamespaceEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, namespaceEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("NamespaceEdge")
+		case "node":
+			out.Values[i] = ec._NamespaceEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._NamespaceEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -4266,6 +11104,59 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "node":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_node(ctx, field)
+				return res
+			})
+		case "user":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_user(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "groups":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_groups(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "installations":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_installations(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "modules":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -4275,9 +11166,12 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_modules(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
-		case "module":
+		case "moduleVersions":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
 				defer func() {
@@ -4285,7 +11179,35 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_module(ctx, field)
+				res = ec._Query_moduleVersions(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "namespaces":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_namespaces(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "users":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_users(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -4295,6 +11217,131 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
 			out.Values[i] = ec._Query___schema(ctx, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userImplementors = []string{"User", "Node"}
+
+func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj *ent.User) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("User")
+		case "id":
+			out.Values[i] = ec._User_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._User_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			out.Values[i] = ec._User_createdAt(ctx, field, obj)
+		case "groups":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_groups(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "resolvedGroups":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._User_resolvedGroups(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userConnectionImplementors = []string{"UserConnection"}
+
+func (ec *executionContext) _UserConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.UserConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserConnection")
+		case "totalCount":
+			out.Values[i] = ec._UserConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._UserConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._UserConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var userEdgeImplementors = []string{"UserEdge"}
+
+func (ec *executionContext) _UserEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.UserEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, userEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UserEdge")
+		case "node":
+			out.Values[i] = ec._UserEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._UserEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -4571,6 +11618,16 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) unmarshalNCreateGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateGroup(ctx context.Context, v interface{}) (model.CreateGroup, error) {
+	res, err := ec.unmarshalInputCreateGroup(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateInstallation(ctx context.Context, v interface{}) (model.CreateInstallation, error) {
+	res, err := ec.unmarshalInputCreateInstallation(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateModule2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateModule(ctx context.Context, v interface{}) (model.CreateModule, error) {
 	res, err := ec.unmarshalInputCreateModule(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4578,6 +11635,16 @@ func (ec *executionContext) unmarshalNCreateModule2githubᚗcomᚋmeringuᚋself
 
 func (ec *executionContext) unmarshalNCreateModuleVersion2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateModuleVersion(ctx context.Context, v interface{}) (model.CreateModuleVersion, error) {
 	res, err := ec.unmarshalInputCreateModuleVersion(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateNamespace(ctx context.Context, v interface{}) (model.CreateNamespace, error) {
+	res, err := ec.unmarshalInputCreateNamespace(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐCreateUser(ctx context.Context, v interface{}) (model.CreateUser, error) {
+	res, err := ec.unmarshalInputCreateUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4591,6 +11658,16 @@ func (ec *executionContext) marshalNCursor2githubᚗcomᚋmeringuᚋselfserveᚋ
 	return v
 }
 
+func (ec *executionContext) unmarshalNDeleteGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteGroup(ctx context.Context, v interface{}) (model.DeleteGroup, error) {
+	res, err := ec.unmarshalInputDeleteGroup(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteInstallation(ctx context.Context, v interface{}) (model.DeleteInstallation, error) {
+	res, err := ec.unmarshalInputDeleteInstallation(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNDeleteModule2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteModule(ctx context.Context, v interface{}) (model.DeleteModule, error) {
 	res, err := ec.unmarshalInputDeleteModule(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4599,6 +11676,49 @@ func (ec *executionContext) unmarshalNDeleteModule2githubᚗcomᚋmeringuᚋself
 func (ec *executionContext) unmarshalNDeleteModuleVersion2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteModuleVersion(ctx context.Context, v interface{}) (model.DeleteModuleVersion, error) {
 	res, err := ec.unmarshalInputDeleteModuleVersion(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteNamespace(ctx context.Context, v interface{}) (model.DeleteNamespace, error) {
+	res, err := ec.unmarshalInputDeleteNamespace(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐDeleteUser(ctx context.Context, v interface{}) (model.DeleteUser, error) {
+	res, err := ec.unmarshalInputDeleteUser(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx context.Context, sel ast.SelectionSet, v ent.Group) graphql.Marshaler {
+	return ec._Group(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx context.Context, sel ast.SelectionSet, v *ent.Group) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Group(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNGroupConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx context.Context, sel ast.SelectionSet, v ent.GroupConnection) graphql.Marshaler {
+	return ec._GroupConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNGroupConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupConnection(ctx context.Context, sel ast.SelectionSet, v *ent.GroupConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._GroupConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx context.Context, v interface{}) (*ent.GroupWhereInput, error) {
+	res, err := ec.unmarshalInputGroupWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
@@ -4614,6 +11734,39 @@ func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.Selectio
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx context.Context, sel ast.SelectionSet, v ent.Installation) graphql.Marshaler {
+	return ec._Installation(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInstallation2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx context.Context, sel ast.SelectionSet, v *ent.Installation) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Installation(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNInstallationConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationConnection(ctx context.Context, sel ast.SelectionSet, v ent.InstallationConnection) graphql.Marshaler {
+	return ec._InstallationConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNInstallationConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationConnection(ctx context.Context, sel ast.SelectionSet, v *ent.InstallationConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._InstallationConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx context.Context, v interface{}) (*ent.InstallationWhereInput, error) {
+	res, err := ec.unmarshalInputInstallationWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -4645,46 +11798,22 @@ func (ec *executionContext) marshalNModule2ᚖgithubᚗcomᚋmeringuᚋselfserve
 	return ec._Module(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNModuleVersion2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx context.Context, sel ast.SelectionSet, v ent.ModuleVersion) graphql.Marshaler {
-	return ec._ModuleVersion(ctx, sel, &v)
+func (ec *executionContext) marshalNModuleConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleConnection(ctx context.Context, sel ast.SelectionSet, v ent.ModuleConnection) graphql.Marshaler {
+	return ec._ModuleConnection(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNModuleVersion2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx context.Context, sel ast.SelectionSet, v []*ent.ModuleVersion) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
+func (ec *executionContext) marshalNModuleConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
 	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOModuleVersion2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
+	return ec._ModuleConnection(ctx, sel, v)
+}
 
-	}
-	wg.Wait()
-
-	return ret
+func (ec *executionContext) marshalNModuleVersion2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx context.Context, sel ast.SelectionSet, v ent.ModuleVersion) graphql.Marshaler {
+	return ec._ModuleVersion(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNModuleVersion2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersion(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleVersion) graphql.Marshaler {
@@ -4697,6 +11826,20 @@ func (ec *executionContext) marshalNModuleVersion2ᚖgithubᚗcomᚋmeringuᚋse
 	return ec._ModuleVersion(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNModuleVersionConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionConnection(ctx context.Context, sel ast.SelectionSet, v ent.ModuleVersionConnection) graphql.Marshaler {
+	return ec._ModuleVersionConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNModuleVersionConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleVersionConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ModuleVersionConnection(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNModuleVersionWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInput(ctx context.Context, v interface{}) (*ent.ModuleVersionWhereInput, error) {
 	res, err := ec.unmarshalInputModuleVersionWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -4704,6 +11847,39 @@ func (ec *executionContext) unmarshalNModuleVersionWhereInput2ᚖgithubᚗcomᚋ
 
 func (ec *executionContext) unmarshalNModuleWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleWhereInput(ctx context.Context, v interface{}) (*ent.ModuleWhereInput, error) {
 	res, err := ec.unmarshalInputModuleWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx context.Context, sel ast.SelectionSet, v ent.Namespace) graphql.Marshaler {
+	return ec._Namespace(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNamespace2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx context.Context, sel ast.SelectionSet, v *ent.Namespace) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Namespace(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNNamespaceConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceConnection(ctx context.Context, sel ast.SelectionSet, v ent.NamespaceConnection) graphql.Marshaler {
+	return ec._NamespaceConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNNamespaceConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceConnection(ctx context.Context, sel ast.SelectionSet, v *ent.NamespaceConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._NamespaceConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNNamespaceWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInput(ctx context.Context, v interface{}) (*ent.NamespaceWhereInput, error) {
+	res, err := ec.unmarshalInputNamespaceWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -4751,6 +11927,16 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
+func (ec *executionContext) unmarshalNUpdateGroup2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateGroup(ctx context.Context, v interface{}) (model.UpdateGroup, error) {
+	res, err := ec.unmarshalInputUpdateGroup(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateInstallation2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateInstallation(ctx context.Context, v interface{}) (model.UpdateInstallation, error) {
+	res, err := ec.unmarshalInputUpdateInstallation(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateModule2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateModule(ctx context.Context, v interface{}) (model.UpdateModule, error) {
 	res, err := ec.unmarshalInputUpdateModule(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -4759,6 +11945,49 @@ func (ec *executionContext) unmarshalNUpdateModule2githubᚗcomᚋmeringuᚋself
 func (ec *executionContext) unmarshalNUpdateModuleVersion2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateModuleVersion(ctx context.Context, v interface{}) (model.UpdateModuleVersion, error) {
 	res, err := ec.unmarshalInputUpdateModuleVersion(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateNamespace2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateNamespace(ctx context.Context, v interface{}) (model.UpdateNamespace, error) {
+	res, err := ec.unmarshalInputUpdateNamespace(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋgraphᚋmodelᚐUpdateUser(ctx context.Context, v interface{}) (model.UpdateUser, error) {
+	res, err := ec.unmarshalInputUpdateUser(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUser2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v ent.User) graphql.Marshaler {
+	return ec._User(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNUserConnection2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v ent.UserConnection) graphql.Marshaler {
+	return ec._UserConnection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUserConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserConnection(ctx context.Context, sel ast.SelectionSet, v *ent.UserConnection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UserConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
+	res, err := ec.unmarshalInputUserWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -5058,6 +12287,117 @@ func (ec *executionContext) marshalOCursor2ᚖgithubᚗcomᚋmeringuᚋselfserve
 	return v
 }
 
+func (ec *executionContext) marshalOGroup2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroup(ctx context.Context, sel ast.SelectionSet, v *ent.Group) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Group(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOGroupEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.GroupEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOGroupEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOGroupEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupEdge(ctx context.Context, sel ast.SelectionSet, v *ent.GroupEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._GroupEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOGroupOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrder(ctx context.Context, v interface{}) (*ent.GroupOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputGroupOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOGroupOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrderField(ctx context.Context, v interface{}) (*ent.GroupOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.GroupOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOGroupOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.GroupOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOGroupWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.GroupWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.GroupWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOGroupWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐGroupWhereInput(ctx context.Context, v interface{}) (*ent.GroupWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputGroupWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOID2ᚕintᚄ(ctx context.Context, v interface{}) ([]int, error) {
 	if v == nil {
 		return nil, nil
@@ -5100,6 +12440,42 @@ func (ec *executionContext) marshalOID2ᚕintᚄ(ctx context.Context, sel ast.Se
 	return ret
 }
 
+func (ec *executionContext) unmarshalOID2ᚕᚖint(ctx context.Context, v interface{}) ([]*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*int, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOID2ᚖint(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOID2ᚕᚖint(ctx context.Context, sel ast.SelectionSet, v []*int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalOID2ᚖint(ctx, sel, v[i])
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalOID2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
@@ -5115,18 +12491,137 @@ func (ec *executionContext) marshalOID2ᚖint(ctx context.Context, sel ast.Selec
 	return graphql.MarshalIntID(*v)
 }
 
+func (ec *executionContext) marshalOInstallation2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallation(ctx context.Context, sel ast.SelectionSet, v *ent.Installation) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Installation(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOInstallationEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.InstallationEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOInstallationEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOInstallationEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationEdge(ctx context.Context, sel ast.SelectionSet, v *ent.InstallationEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._InstallationEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOInstallationOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrder(ctx context.Context, v interface{}) (*ent.InstallationOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInstallationOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInstallationOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrderField(ctx context.Context, v interface{}) (*ent.InstallationOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.InstallationOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInstallationOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.InstallationOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOInstallationWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.InstallationWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.InstallationWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOInstallationWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐInstallationWhereInput(ctx context.Context, v interface{}) (*ent.InstallationWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputInstallationWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*v)
+}
+
 func (ec *executionContext) marshalOModule2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModule(ctx context.Context, sel ast.SelectionSet, v *ent.Module) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._Module(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOModuleConnection2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleConnection) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	return ec._ModuleConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOModuleEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ModuleEdge) graphql.Marshaler {
@@ -5208,6 +12703,78 @@ func (ec *executionContext) marshalOModuleVersion2ᚖgithubᚗcomᚋmeringuᚋse
 	return ec._ModuleVersion(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOModuleVersionEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ModuleVersionEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOModuleVersionEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOModuleVersionEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleVersionEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ModuleVersionEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOModuleVersionOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrder(ctx context.Context, v interface{}) (*ent.ModuleVersionOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputModuleVersionOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOModuleVersionOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrderField(ctx context.Context, v interface{}) (*ent.ModuleVersionOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.ModuleVersionOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOModuleVersionOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.ModuleVersionOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
 func (ec *executionContext) unmarshalOModuleVersionWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐModuleVersionWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ModuleVersionWhereInput, error) {
 	if v == nil {
 		return nil, nil
@@ -5270,6 +12837,124 @@ func (ec *executionContext) unmarshalOModuleWhereInput2ᚖgithubᚗcomᚋmeringu
 	}
 	res, err := ec.unmarshalInputModuleWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONamespace2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespace(ctx context.Context, sel ast.SelectionSet, v *ent.Namespace) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Namespace(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalONamespaceEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.NamespaceEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalONamespaceEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalONamespaceEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceEdge(ctx context.Context, sel ast.SelectionSet, v *ent.NamespaceEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._NamespaceEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalONamespaceOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceOrder(ctx context.Context, v interface{}) (*ent.NamespaceOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputNamespaceOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalONamespaceOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceOrderField(ctx context.Context, v interface{}) (*ent.NamespaceOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.NamespaceOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONamespaceOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.NamespaceOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalONamespaceWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.NamespaceWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.NamespaceWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNNamespaceWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalONamespaceWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNamespaceWhereInput(ctx context.Context, v interface{}) (*ent.NamespaceWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputNamespaceWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalONode2githubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v ent.Noder) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Node(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
@@ -5402,6 +13087,117 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	return graphql.MarshalTime(*v)
+}
+
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUser(ctx context.Context, sel ast.SelectionSet, v *ent.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOUserEdge2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.UserEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOUserEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOUserEdge2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserEdge(ctx context.Context, sel ast.SelectionSet, v *ent.UserEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._UserEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOUserOrder2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrder(ctx context.Context, v interface{}) (*ent.UserOrder, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUserOrder(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOUserOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrderField(ctx context.Context, v interface{}) (*ent.UserOrderField, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(ent.UserOrderField)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUserOrderField2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserOrderField(ctx context.Context, sel ast.SelectionSet, v *ent.UserOrderField) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalOUserWhereInput2ᚕᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.UserWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.UserWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOUserWhereInput2ᚖgithubᚗcomᚋmeringuᚋselfserveᚋpkgᚋapiᚋentᚐUserWhereInput(ctx context.Context, v interface{}) (*ent.UserWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUserWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

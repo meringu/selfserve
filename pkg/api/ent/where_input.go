@@ -6,10 +6,468 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/meringu/selfserve/pkg/api/ent/group"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
+	"github.com/meringu/selfserve/pkg/api/ent/user"
 )
+
+// GroupWhereInput represents a where input for filtering Group queries.
+type GroupWhereInput struct {
+	Not *GroupWhereInput   `json:"not,omitempty"`
+	Or  []*GroupWhereInput `json:"or,omitempty"`
+	And []*GroupWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "users" edge predicates.
+	HasUsers     *bool             `json:"hasUsers,omitempty"`
+	HasUsersWith []*UserWhereInput `json:"hasUsersWith,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool              `json:"hasParent,omitempty"`
+	HasParentWith []*GroupWhereInput `json:"hasParentWith,omitempty"`
+
+	// "children" edge predicates.
+	HasChildren     *bool              `json:"hasChildren,omitempty"`
+	HasChildrenWith []*GroupWhereInput `json:"hasChildrenWith,omitempty"`
+
+	// "namespaces" edge predicates.
+	HasNamespaces     *bool                  `json:"hasNamespaces,omitempty"`
+	HasNamespacesWith []*NamespaceWhereInput `json:"hasNamespacesWith,omitempty"`
+}
+
+// Filter applies the GroupWhereInput filter on the GroupQuery builder.
+func (i *GroupWhereInput) Filter(q *GroupQuery) (*GroupQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering groups.
+// An error is returned if the input is empty or invalid.
+func (i *GroupWhereInput) P() (predicate.Group, error) {
+	var predicates []predicate.Group
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, group.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Group, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, group.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Group, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, group.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, group.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, group.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, group.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, group.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, group.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, group.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, group.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, group.IDLTE(*i.IDLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, group.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, group.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, group.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, group.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, group.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, group.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, group.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, group.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, group.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, group.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, group.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, group.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, group.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, group.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, group.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, group.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, group.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, group.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, group.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, group.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, group.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+
+	if i.HasUsers != nil {
+		p := group.HasUsers()
+		if !*i.HasUsers {
+			p = group.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasUsersWith) > 0 {
+		with := make([]predicate.User, 0, len(i.HasUsersWith))
+		for _, w := range i.HasUsersWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, group.HasUsersWith(with...))
+	}
+	if i.HasParent != nil {
+		p := group.HasParent()
+		if !*i.HasParent {
+			p = group.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.Group, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, group.HasParentWith(with...))
+	}
+	if i.HasChildren != nil {
+		p := group.HasChildren()
+		if !*i.HasChildren {
+			p = group.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasChildrenWith) > 0 {
+		with := make([]predicate.Group, 0, len(i.HasChildrenWith))
+		for _, w := range i.HasChildrenWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, group.HasChildrenWith(with...))
+	}
+	if i.HasNamespaces != nil {
+		p := group.HasNamespaces()
+		if !*i.HasNamespaces {
+			p = group.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasNamespacesWith) > 0 {
+		with := make([]predicate.Namespace, 0, len(i.HasNamespacesWith))
+		for _, w := range i.HasNamespacesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, group.HasNamespacesWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("github.com/meringu/selfserve/pkg/api/ent: empty predicate GroupWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return group.And(predicates...), nil
+	}
+}
+
+// InstallationWhereInput represents a where input for filtering Installation queries.
+type InstallationWhereInput struct {
+	Not *InstallationWhereInput   `json:"not,omitempty"`
+	Or  []*InstallationWhereInput `json:"or,omitempty"`
+	And []*InstallationWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "moduleVersion" edge predicates.
+	HasModuleVersion     *bool                      `json:"hasModuleVersion,omitempty"`
+	HasModuleVersionWith []*ModuleVersionWhereInput `json:"hasModuleVersionWith,omitempty"`
+}
+
+// Filter applies the InstallationWhereInput filter on the InstallationQuery builder.
+func (i *InstallationWhereInput) Filter(q *InstallationQuery) (*InstallationQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering installations.
+// An error is returned if the input is empty or invalid.
+func (i *InstallationWhereInput) P() (predicate.Installation, error) {
+	var predicates []predicate.Installation
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, installation.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Installation, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, installation.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Installation, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, installation.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, installation.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, installation.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, installation.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, installation.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, installation.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, installation.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, installation.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, installation.IDLTE(*i.IDLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, installation.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, installation.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, installation.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, installation.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, installation.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, installation.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, installation.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, installation.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+
+	if i.HasModuleVersion != nil {
+		p := installation.HasModuleVersion()
+		if !*i.HasModuleVersion {
+			p = installation.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasModuleVersionWith) > 0 {
+		with := make([]predicate.ModuleVersion, 0, len(i.HasModuleVersionWith))
+		for _, w := range i.HasModuleVersionWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, installation.HasModuleVersionWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("github.com/meringu/selfserve/pkg/api/ent: empty predicate InstallationWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return installation.And(predicates...), nil
+	}
+}
 
 // ModuleWhereInput represents a where input for filtering Module queries.
 type ModuleWhereInput struct {
@@ -66,6 +524,10 @@ type ModuleWhereInput struct {
 	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
 	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
 	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "namespace" edge predicates.
+	HasNamespace     *bool                  `json:"hasNamespace,omitempty"`
+	HasNamespaceWith []*NamespaceWhereInput `json:"hasNamespaceWith,omitempty"`
 
 	// "versions" edge predicates.
 	HasVersions     *bool                      `json:"hasVersions,omitempty"`
@@ -258,6 +720,24 @@ func (i *ModuleWhereInput) P() (predicate.Module, error) {
 		predicates = append(predicates, module.CreatedAtLTE(*i.CreatedAtLTE))
 	}
 
+	if i.HasNamespace != nil {
+		p := module.HasNamespace()
+		if !*i.HasNamespace {
+			p = module.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasNamespaceWith) > 0 {
+		with := make([]predicate.Namespace, 0, len(i.HasNamespaceWith))
+		for _, w := range i.HasNamespaceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, module.HasNamespaceWith(with...))
+	}
 	if i.HasVersions != nil {
 		p := module.HasVersions()
 		if !*i.HasVersions {
@@ -302,36 +782,6 @@ type ModuleVersionWhereInput struct {
 	IDLT    *int  `json:"idLT,omitempty"`
 	IDLTE   *int  `json:"idLTE,omitempty"`
 
-	// "version" field predicates.
-	Version             *string  `json:"version,omitempty"`
-	VersionNEQ          *string  `json:"versionNEQ,omitempty"`
-	VersionIn           []string `json:"versionIn,omitempty"`
-	VersionNotIn        []string `json:"versionNotIn,omitempty"`
-	VersionGT           *string  `json:"versionGT,omitempty"`
-	VersionGTE          *string  `json:"versionGTE,omitempty"`
-	VersionLT           *string  `json:"versionLT,omitempty"`
-	VersionLTE          *string  `json:"versionLTE,omitempty"`
-	VersionContains     *string  `json:"versionContains,omitempty"`
-	VersionHasPrefix    *string  `json:"versionHasPrefix,omitempty"`
-	VersionHasSuffix    *string  `json:"versionHasSuffix,omitempty"`
-	VersionEqualFold    *string  `json:"versionEqualFold,omitempty"`
-	VersionContainsFold *string  `json:"versionContainsFold,omitempty"`
-
-	// "source" field predicates.
-	Source             *string  `json:"source,omitempty"`
-	SourceNEQ          *string  `json:"sourceNEQ,omitempty"`
-	SourceIn           []string `json:"sourceIn,omitempty"`
-	SourceNotIn        []string `json:"sourceNotIn,omitempty"`
-	SourceGT           *string  `json:"sourceGT,omitempty"`
-	SourceGTE          *string  `json:"sourceGTE,omitempty"`
-	SourceLT           *string  `json:"sourceLT,omitempty"`
-	SourceLTE          *string  `json:"sourceLTE,omitempty"`
-	SourceContains     *string  `json:"sourceContains,omitempty"`
-	SourceHasPrefix    *string  `json:"sourceHasPrefix,omitempty"`
-	SourceHasSuffix    *string  `json:"sourceHasSuffix,omitempty"`
-	SourceEqualFold    *string  `json:"sourceEqualFold,omitempty"`
-	SourceContainsFold *string  `json:"sourceContainsFold,omitempty"`
-
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
 	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
@@ -345,6 +795,10 @@ type ModuleVersionWhereInput struct {
 	// "module" edge predicates.
 	HasModule     *bool               `json:"hasModule,omitempty"`
 	HasModuleWith []*ModuleWhereInput `json:"hasModuleWith,omitempty"`
+
+	// "installations" edge predicates.
+	HasInstallations     *bool                     `json:"hasInstallations,omitempty"`
+	HasInstallationsWith []*InstallationWhereInput `json:"hasInstallationsWith,omitempty"`
 }
 
 // Filter applies the ModuleVersionWhereInput filter on the ModuleVersionQuery builder.
@@ -430,84 +884,6 @@ func (i *ModuleVersionWhereInput) P() (predicate.ModuleVersion, error) {
 	if i.IDLTE != nil {
 		predicates = append(predicates, moduleversion.IDLTE(*i.IDLTE))
 	}
-	if i.Version != nil {
-		predicates = append(predicates, moduleversion.VersionEQ(*i.Version))
-	}
-	if i.VersionNEQ != nil {
-		predicates = append(predicates, moduleversion.VersionNEQ(*i.VersionNEQ))
-	}
-	if len(i.VersionIn) > 0 {
-		predicates = append(predicates, moduleversion.VersionIn(i.VersionIn...))
-	}
-	if len(i.VersionNotIn) > 0 {
-		predicates = append(predicates, moduleversion.VersionNotIn(i.VersionNotIn...))
-	}
-	if i.VersionGT != nil {
-		predicates = append(predicates, moduleversion.VersionGT(*i.VersionGT))
-	}
-	if i.VersionGTE != nil {
-		predicates = append(predicates, moduleversion.VersionGTE(*i.VersionGTE))
-	}
-	if i.VersionLT != nil {
-		predicates = append(predicates, moduleversion.VersionLT(*i.VersionLT))
-	}
-	if i.VersionLTE != nil {
-		predicates = append(predicates, moduleversion.VersionLTE(*i.VersionLTE))
-	}
-	if i.VersionContains != nil {
-		predicates = append(predicates, moduleversion.VersionContains(*i.VersionContains))
-	}
-	if i.VersionHasPrefix != nil {
-		predicates = append(predicates, moduleversion.VersionHasPrefix(*i.VersionHasPrefix))
-	}
-	if i.VersionHasSuffix != nil {
-		predicates = append(predicates, moduleversion.VersionHasSuffix(*i.VersionHasSuffix))
-	}
-	if i.VersionEqualFold != nil {
-		predicates = append(predicates, moduleversion.VersionEqualFold(*i.VersionEqualFold))
-	}
-	if i.VersionContainsFold != nil {
-		predicates = append(predicates, moduleversion.VersionContainsFold(*i.VersionContainsFold))
-	}
-	if i.Source != nil {
-		predicates = append(predicates, moduleversion.SourceEQ(*i.Source))
-	}
-	if i.SourceNEQ != nil {
-		predicates = append(predicates, moduleversion.SourceNEQ(*i.SourceNEQ))
-	}
-	if len(i.SourceIn) > 0 {
-		predicates = append(predicates, moduleversion.SourceIn(i.SourceIn...))
-	}
-	if len(i.SourceNotIn) > 0 {
-		predicates = append(predicates, moduleversion.SourceNotIn(i.SourceNotIn...))
-	}
-	if i.SourceGT != nil {
-		predicates = append(predicates, moduleversion.SourceGT(*i.SourceGT))
-	}
-	if i.SourceGTE != nil {
-		predicates = append(predicates, moduleversion.SourceGTE(*i.SourceGTE))
-	}
-	if i.SourceLT != nil {
-		predicates = append(predicates, moduleversion.SourceLT(*i.SourceLT))
-	}
-	if i.SourceLTE != nil {
-		predicates = append(predicates, moduleversion.SourceLTE(*i.SourceLTE))
-	}
-	if i.SourceContains != nil {
-		predicates = append(predicates, moduleversion.SourceContains(*i.SourceContains))
-	}
-	if i.SourceHasPrefix != nil {
-		predicates = append(predicates, moduleversion.SourceHasPrefix(*i.SourceHasPrefix))
-	}
-	if i.SourceHasSuffix != nil {
-		predicates = append(predicates, moduleversion.SourceHasSuffix(*i.SourceHasSuffix))
-	}
-	if i.SourceEqualFold != nil {
-		predicates = append(predicates, moduleversion.SourceEqualFold(*i.SourceEqualFold))
-	}
-	if i.SourceContainsFold != nil {
-		predicates = append(predicates, moduleversion.SourceContainsFold(*i.SourceContainsFold))
-	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, moduleversion.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -551,6 +927,24 @@ func (i *ModuleVersionWhereInput) P() (predicate.ModuleVersion, error) {
 		}
 		predicates = append(predicates, moduleversion.HasModuleWith(with...))
 	}
+	if i.HasInstallations != nil {
+		p := moduleversion.HasInstallations()
+		if !*i.HasInstallations {
+			p = moduleversion.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasInstallationsWith) > 0 {
+		with := make([]predicate.Installation, 0, len(i.HasInstallationsWith))
+		for _, w := range i.HasInstallationsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, moduleversion.HasInstallationsWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("github.com/meringu/selfserve/pkg/api/ent: empty predicate ModuleVersionWhereInput")
@@ -558,5 +952,535 @@ func (i *ModuleVersionWhereInput) P() (predicate.ModuleVersion, error) {
 		return predicates[0], nil
 	default:
 		return moduleversion.And(predicates...), nil
+	}
+}
+
+// NamespaceWhereInput represents a where input for filtering Namespace queries.
+type NamespaceWhereInput struct {
+	Not *NamespaceWhereInput   `json:"not,omitempty"`
+	Or  []*NamespaceWhereInput `json:"or,omitempty"`
+	And []*NamespaceWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "groups" edge predicates.
+	HasGroups     *bool              `json:"hasGroups,omitempty"`
+	HasGroupsWith []*GroupWhereInput `json:"hasGroupsWith,omitempty"`
+
+	// "users" edge predicates.
+	HasUsers     *bool             `json:"hasUsers,omitempty"`
+	HasUsersWith []*UserWhereInput `json:"hasUsersWith,omitempty"`
+
+	// "modules" edge predicates.
+	HasModules     *bool               `json:"hasModules,omitempty"`
+	HasModulesWith []*ModuleWhereInput `json:"hasModulesWith,omitempty"`
+
+	// "installations" edge predicates.
+	HasInstallations     *bool                     `json:"hasInstallations,omitempty"`
+	HasInstallationsWith []*InstallationWhereInput `json:"hasInstallationsWith,omitempty"`
+}
+
+// Filter applies the NamespaceWhereInput filter on the NamespaceQuery builder.
+func (i *NamespaceWhereInput) Filter(q *NamespaceQuery) (*NamespaceQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering namespaces.
+// An error is returned if the input is empty or invalid.
+func (i *NamespaceWhereInput) P() (predicate.Namespace, error) {
+	var predicates []predicate.Namespace
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, namespace.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Namespace, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, namespace.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Namespace, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, namespace.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, namespace.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, namespace.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, namespace.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, namespace.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, namespace.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, namespace.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, namespace.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, namespace.IDLTE(*i.IDLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, namespace.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, namespace.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, namespace.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, namespace.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, namespace.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, namespace.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, namespace.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, namespace.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, namespace.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, namespace.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, namespace.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, namespace.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, namespace.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, namespace.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, namespace.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, namespace.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, namespace.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, namespace.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, namespace.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, namespace.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, namespace.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+
+	if i.HasGroups != nil {
+		p := namespace.HasGroups()
+		if !*i.HasGroups {
+			p = namespace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasGroupsWith) > 0 {
+		with := make([]predicate.Group, 0, len(i.HasGroupsWith))
+		for _, w := range i.HasGroupsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, namespace.HasGroupsWith(with...))
+	}
+	if i.HasUsers != nil {
+		p := namespace.HasUsers()
+		if !*i.HasUsers {
+			p = namespace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasUsersWith) > 0 {
+		with := make([]predicate.User, 0, len(i.HasUsersWith))
+		for _, w := range i.HasUsersWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, namespace.HasUsersWith(with...))
+	}
+	if i.HasModules != nil {
+		p := namespace.HasModules()
+		if !*i.HasModules {
+			p = namespace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasModulesWith) > 0 {
+		with := make([]predicate.Module, 0, len(i.HasModulesWith))
+		for _, w := range i.HasModulesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, namespace.HasModulesWith(with...))
+	}
+	if i.HasInstallations != nil {
+		p := namespace.HasInstallations()
+		if !*i.HasInstallations {
+			p = namespace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasInstallationsWith) > 0 {
+		with := make([]predicate.Installation, 0, len(i.HasInstallationsWith))
+		for _, w := range i.HasInstallationsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, namespace.HasInstallationsWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("github.com/meringu/selfserve/pkg/api/ent: empty predicate NamespaceWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return namespace.And(predicates...), nil
+	}
+}
+
+// UserWhereInput represents a where input for filtering User queries.
+type UserWhereInput struct {
+	Not *UserWhereInput   `json:"not,omitempty"`
+	Or  []*UserWhereInput `json:"or,omitempty"`
+	And []*UserWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *int  `json:"id,omitempty"`
+	IDNEQ   *int  `json:"idNEQ,omitempty"`
+	IDIn    []int `json:"idIn,omitempty"`
+	IDNotIn []int `json:"idNotIn,omitempty"`
+	IDGT    *int  `json:"idGT,omitempty"`
+	IDGTE   *int  `json:"idGTE,omitempty"`
+	IDLT    *int  `json:"idLT,omitempty"`
+	IDLTE   *int  `json:"idLTE,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "groups" edge predicates.
+	HasGroups     *bool              `json:"hasGroups,omitempty"`
+	HasGroupsWith []*GroupWhereInput `json:"hasGroupsWith,omitempty"`
+
+	// "namespaces" edge predicates.
+	HasNamespaces     *bool                  `json:"hasNamespaces,omitempty"`
+	HasNamespacesWith []*NamespaceWhereInput `json:"hasNamespacesWith,omitempty"`
+}
+
+// Filter applies the UserWhereInput filter on the UserQuery builder.
+func (i *UserWhereInput) Filter(q *UserQuery) (*UserQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering users.
+// An error is returned if the input is empty or invalid.
+func (i *UserWhereInput) P() (predicate.User, error) {
+	var predicates []predicate.User
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, user.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.User, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, user.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.User, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, user.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, user.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, user.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, user.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, user.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, user.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, user.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, user.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, user.IDLTE(*i.IDLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, user.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, user.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, user.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, user.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, user.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, user.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, user.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, user.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, user.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, user.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, user.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, user.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, user.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, user.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, user.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, user.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, user.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, user.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, user.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, user.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, user.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+
+	if i.HasGroups != nil {
+		p := user.HasGroups()
+		if !*i.HasGroups {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasGroupsWith) > 0 {
+		with := make([]predicate.Group, 0, len(i.HasGroupsWith))
+		for _, w := range i.HasGroupsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasGroupsWith(with...))
+	}
+	if i.HasNamespaces != nil {
+		p := user.HasNamespaces()
+		if !*i.HasNamespaces {
+			p = user.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasNamespacesWith) > 0 {
+		with := make([]predicate.Namespace, 0, len(i.HasNamespacesWith))
+		for _, w := range i.HasNamespacesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, user.HasNamespacesWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("github.com/meringu/selfserve/pkg/api/ent: empty predicate UserWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return user.And(predicates...), nil
 	}
 }

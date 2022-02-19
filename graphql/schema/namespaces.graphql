@@ -1,0 +1,63 @@
+type Namespace implements Node {
+  id: ID!
+  name: String!
+  createdAt: Time
+  groups(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: GroupOrder
+    where: GroupWhereInput
+  ): GroupConnection! @goField(forceResolver: true)
+  users(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+  resolvedUsers(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: UserOrder
+    where: UserWhereInput
+  ): UserConnection! @goField(forceResolver: true)
+}
+
+type NamespaceConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [NamespaceEdge]
+}
+
+type NamespaceEdge {
+  node: Namespace
+  cursor: Cursor!
+}
+
+enum NamespaceOrderField {
+  CREATED_AT
+  NAME
+}
+
+input NamespaceOrder {
+  direction: OrderDirection!
+  field: NamespaceOrderField
+}
+
+input CreateNamespace {
+  name: String!
+}
+
+input UpdateNamespace {
+  id: ID!
+  name: String
+}
+
+input DeleteNamespace {
+  id: ID!
+}

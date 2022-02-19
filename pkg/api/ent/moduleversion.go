@@ -17,10 +17,6 @@ type ModuleVersion struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Version holds the value of the "version" field.
-	Version string `json:"version,omitempty"`
-	// Source holds the value of the "source" field.
-	Source string `json:"source,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -33,9 +29,11 @@ type ModuleVersion struct {
 type ModuleVersionEdges struct {
 	// Module holds the value of the module edge.
 	Module *Module `json:"module,omitempty"`
+	// Installations holds the value of the installations edge.
+	Installations []*Installation `json:"installations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ModuleOrErr returns the Module value or an error if the edge
@@ -52,6 +50,15 @@ func (e ModuleVersionEdges) ModuleOrErr() (*Module, error) {
 	return nil, &NotLoadedError{edge: "module"}
 }
 
+// InstallationsOrErr returns the Installations value or an error if the edge
+// was not loaded in eager-loading.
+func (e ModuleVersionEdges) InstallationsOrErr() ([]*Installation, error) {
+	if e.loadedTypes[1] {
+		return e.Installations, nil
+	}
+	return nil, &NotLoadedError{edge: "installations"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*ModuleVersion) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -59,8 +66,6 @@ func (*ModuleVersion) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case moduleversion.FieldID:
 			values[i] = new(sql.NullInt64)
-		case moduleversion.FieldVersion, moduleversion.FieldSource:
-			values[i] = new(sql.NullString)
 		case moduleversion.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case moduleversion.ForeignKeys[0]: // module_versions
@@ -86,18 +91,6 @@ func (mv *ModuleVersion) assignValues(columns []string, values []interface{}) er
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			mv.ID = int(value.Int64)
-		case moduleversion.FieldVersion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field version", values[i])
-			} else if value.Valid {
-				mv.Version = value.String
-			}
-		case moduleversion.FieldSource:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field source", values[i])
-			} else if value.Valid {
-				mv.Source = value.String
-			}
 		case moduleversion.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -119,6 +112,11 @@ func (mv *ModuleVersion) assignValues(columns []string, values []interface{}) er
 // QueryModule queries the "module" edge of the ModuleVersion entity.
 func (mv *ModuleVersion) QueryModule() *ModuleQuery {
 	return (&ModuleVersionClient{config: mv.config}).QueryModule(mv)
+}
+
+// QueryInstallations queries the "installations" edge of the ModuleVersion entity.
+func (mv *ModuleVersion) QueryInstallations() *InstallationQuery {
+	return (&ModuleVersionClient{config: mv.config}).QueryInstallations(mv)
 }
 
 // Update returns a builder for updating this ModuleVersion.
@@ -144,10 +142,6 @@ func (mv *ModuleVersion) String() string {
 	var builder strings.Builder
 	builder.WriteString("ModuleVersion(")
 	builder.WriteString(fmt.Sprintf("id=%v", mv.ID))
-	builder.WriteString(", version=")
-	builder.WriteString(mv.Version)
-	builder.WriteString(", source=")
-	builder.WriteString(mv.Source)
 	builder.WriteString(", created_at=")
 	builder.WriteString(mv.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')

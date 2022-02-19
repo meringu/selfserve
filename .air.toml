@@ -6,11 +6,6 @@ cmd = "go build -o ./.air/selfservice main.go"
 bin = ".air/selfservice server"
 include_ext = ["go"]
 exclude_dir = ["public", "src", "dist", "data", "node_modules"]
-stop_on_error = true
-log = "air_errors.log"
-send_interrupt = true
-kill_delay = 10000
-delay = 300
 
 [misc]
 clean_on_exit = true

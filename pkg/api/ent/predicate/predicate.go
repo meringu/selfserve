@@ -6,8 +6,20 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Group is the predicate function for group builders.
+type Group func(*sql.Selector)
+
+// Installation is the predicate function for installation builders.
+type Installation func(*sql.Selector)
+
 // Module is the predicate function for module builders.
 type Module func(*sql.Selector)
 
 // ModuleVersion is the predicate function for moduleversion builders.
 type ModuleVersion func(*sql.Selector)
+
+// Namespace is the predicate function for namespace builders.
+type Namespace func(*sql.Selector)
+
+// User is the predicate function for user builders.
+type User func(*sql.Selector)

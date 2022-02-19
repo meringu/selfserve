@@ -1,0 +1,47 @@
+type ModuleVersion implements Node {
+  id: ID!
+  module: Module!
+  createdAt: Time!
+  installations(
+    after: Cursor
+    first: Int
+    before: Cursor
+    last: Int
+    orderBy: InstallationOrder
+    where: InstallationWhereInput
+  ): InstallationConnection! @goField(forceResolver: true)
+}
+
+type ModuleVersionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ModuleVersionEdge]
+}
+
+type ModuleVersionEdge {
+  node: ModuleVersion
+  cursor: Cursor!
+}
+
+enum ModuleVersionOrderField {
+  CREATED_AT
+  NAME
+}
+
+input ModuleVersionOrder {
+  direction: OrderDirection!
+  field: ModuleVersionOrderField
+}
+
+input CreateModuleVersion {
+  id: ID!
+  version: String!
+}
+
+input UpdateModuleVersion {
+  id: ID!
+}
+
+input DeleteModuleVersion {
+  id: ID!
+}

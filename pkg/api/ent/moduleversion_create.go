@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
 )
@@ -19,18 +20,6 @@ type ModuleVersionCreate struct {
 	config
 	mutation *ModuleVersionMutation
 	hooks    []Hook
-}
-
-// SetVersion sets the "version" field.
-func (mvc *ModuleVersionCreate) SetVersion(s string) *ModuleVersionCreate {
-	mvc.mutation.SetVersion(s)
-	return mvc
-}
-
-// SetSource sets the "source" field.
-func (mvc *ModuleVersionCreate) SetSource(s string) *ModuleVersionCreate {
-	mvc.mutation.SetSource(s)
-	return mvc
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -64,6 +53,21 @@ func (mvc *ModuleVersionCreate) SetNillableModuleID(id *int) *ModuleVersionCreat
 // SetModule sets the "module" edge to the Module entity.
 func (mvc *ModuleVersionCreate) SetModule(m *Module) *ModuleVersionCreate {
 	return mvc.SetModuleID(m.ID)
+}
+
+// AddInstallationIDs adds the "installations" edge to the Installation entity by IDs.
+func (mvc *ModuleVersionCreate) AddInstallationIDs(ids ...int) *ModuleVersionCreate {
+	mvc.mutation.AddInstallationIDs(ids...)
+	return mvc
+}
+
+// AddInstallations adds the "installations" edges to the Installation entity.
+func (mvc *ModuleVersionCreate) AddInstallations(i ...*Installation) *ModuleVersionCreate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return mvc.AddInstallationIDs(ids...)
 }
 
 // Mutation returns the ModuleVersionMutation object of the builder.
@@ -145,12 +149,6 @@ func (mvc *ModuleVersionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (mvc *ModuleVersionCreate) check() error {
-	if _, ok := mvc.mutation.Version(); !ok {
-		return &ValidationError{Name: "version", err: errors.New(`ent: missing required field "version"`)}
-	}
-	if _, ok := mvc.mutation.Source(); !ok {
-		return &ValidationError{Name: "source", err: errors.New(`ent: missing required field "source"`)}
-	}
 	if _, ok := mvc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -181,22 +179,6 @@ func (mvc *ModuleVersionCreate) createSpec() (*ModuleVersion, *sqlgraph.CreateSp
 			},
 		}
 	)
-	if value, ok := mvc.mutation.Version(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldVersion,
-		})
-		_node.Version = value
-	}
-	if value, ok := mvc.mutation.Source(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: moduleversion.FieldSource,
-		})
-		_node.Source = value
-	}
 	if value, ok := mvc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
@@ -223,6 +205,25 @@ func (mvc *ModuleVersionCreate) createSpec() (*ModuleVersion, *sqlgraph.CreateSp
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.module_versions = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mvc.mutation.InstallationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   moduleversion.InstallationsTable,
+			Columns: []string{moduleversion.InstallationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: installation.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

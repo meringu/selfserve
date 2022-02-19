@@ -17,10 +17,19 @@ const (
 	FieldDescription = "description"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
+	// EdgeNamespace holds the string denoting the namespace edge name in mutations.
+	EdgeNamespace = "namespace"
 	// EdgeVersions holds the string denoting the versions edge name in mutations.
 	EdgeVersions = "versions"
 	// Table holds the table name of the module in the database.
 	Table = "modules"
+	// NamespaceTable is the table that holds the namespace relation/edge.
+	NamespaceTable = "modules"
+	// NamespaceInverseTable is the table name for the Namespace entity.
+	// It exists in this package in order to avoid circular dependency with the "namespace" package.
+	NamespaceInverseTable = "namespaces"
+	// NamespaceColumn is the table column denoting the namespace relation/edge.
+	NamespaceColumn = "namespace_modules"
 	// VersionsTable is the table that holds the versions relation/edge.
 	VersionsTable = "module_versions"
 	// VersionsInverseTable is the table name for the ModuleVersion entity.
@@ -38,10 +47,21 @@ var Columns = []string{
 	FieldCreatedAt,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "modules"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"namespace_modules",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

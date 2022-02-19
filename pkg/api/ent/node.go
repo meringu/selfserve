@@ -15,8 +15,12 @@ import (
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
+	"github.com/meringu/selfserve/pkg/api/ent/group"
+	"github.com/meringu/selfserve/pkg/api/ent/installation"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
+	"github.com/meringu/selfserve/pkg/api/ent/user"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -47,12 +51,108 @@ type Edge struct {
 	IDs  []int  `json:"ids,omitempty"`  // node ids (where this edge point to).
 }
 
+func (gr *Group) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     gr.ID,
+		Type:   "Group",
+		Fields: make([]*Field, 2),
+		Edges:  make([]*Edge, 4),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(gr.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(gr.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "User",
+		Name: "users",
+	}
+	err = gr.QueryUsers().
+		Select(user.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Group",
+		Name: "parent",
+	}
+	err = gr.QueryParent().
+		Select(group.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Group",
+		Name: "children",
+	}
+	err = gr.QueryChildren().
+		Select(group.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "Namespace",
+		Name: "namespaces",
+	}
+	err = gr.QueryNamespaces().
+		Select(namespace.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (i *Installation) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     i.ID,
+		Type:   "Installation",
+		Fields: make([]*Field, 1),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(i.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "ModuleVersion",
+		Name: "moduleVersion",
+	}
+	err = i.QueryModuleVersion().
+		Select(moduleversion.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (m *Module) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     m.ID,
 		Type:   "Module",
 		Fields: make([]*Field, 3),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(m.Name); err != nil {
@@ -80,12 +180,22 @@ func (m *Module) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
+		Type: "Namespace",
+		Name: "namespace",
+	}
+	err = m.QueryNamespace().
+		Select(namespace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
 		Type: "ModuleVersion",
 		Name: "versions",
 	}
 	err = m.QueryVersions().
 		Select(moduleversion.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -96,30 +206,14 @@ func (mv *ModuleVersion) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     mv.ID,
 		Type:   "ModuleVersion",
-		Fields: make([]*Field, 3),
-		Edges:  make([]*Edge, 1),
+		Fields: make([]*Field, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
-	if buf, err = json.Marshal(mv.Version); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "string",
-		Name:  "version",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(mv.Source); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "string",
-		Name:  "source",
-		Value: string(buf),
-	}
 	if buf, err = json.Marshal(mv.CreatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[2] = &Field{
+	node.Fields[0] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -131,6 +225,130 @@ func (mv *ModuleVersion) Node(ctx context.Context) (node *Node, err error) {
 	err = mv.QueryModule().
 		Select(module.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Installation",
+		Name: "installations",
+	}
+	err = mv.QueryInstallations().
+		Select(installation.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (n *Namespace) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     n.ID,
+		Type:   "Namespace",
+		Fields: make([]*Field, 2),
+		Edges:  make([]*Edge, 4),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(n.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(n.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Group",
+		Name: "groups",
+	}
+	err = n.QueryGroups().
+		Select(group.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "User",
+		Name: "users",
+	}
+	err = n.QueryUsers().
+		Select(user.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Module",
+		Name: "modules",
+	}
+	err = n.QueryModules().
+		Select(module.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "Installation",
+		Name: "installations",
+	}
+	err = n.QueryInstallations().
+		Select(installation.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (u *User) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     u.ID,
+		Type:   "User",
+		Fields: make([]*Field, 2),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(u.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(u.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Group",
+		Name: "groups",
+	}
+	err = u.QueryGroups().
+		Select(group.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Namespace",
+		Name: "namespaces",
+	}
+	err = u.QueryNamespaces().
+		Select(namespace.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -204,6 +422,24 @@ func (c *Client) Noder(ctx context.Context, id int, opts ...NodeOption) (_ Noder
 
 func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error) {
 	switch table {
+	case group.Table:
+		n, err := c.Group.Query().
+			Where(group.ID(id)).
+			CollectFields(ctx, "Group").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case installation.Table:
+		n, err := c.Installation.Query().
+			Where(installation.ID(id)).
+			CollectFields(ctx, "Installation").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case module.Table:
 		n, err := c.Module.Query().
 			Where(module.ID(id)).
@@ -217,6 +453,24 @@ func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error)
 		n, err := c.ModuleVersion.Query().
 			Where(moduleversion.ID(id)).
 			CollectFields(ctx, "ModuleVersion").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case namespace.Table:
+		n, err := c.Namespace.Query().
+			Where(namespace.ID(id)).
+			CollectFields(ctx, "Namespace").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case user.Table:
+		n, err := c.User.Query().
+			Where(user.ID(id)).
+			CollectFields(ctx, "User").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -295,6 +549,32 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case group.Table:
+		nodes, err := c.Group.Query().
+			Where(group.IDIn(ids...)).
+			CollectFields(ctx, "Group").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case installation.Table:
+		nodes, err := c.Installation.Query().
+			Where(installation.IDIn(ids...)).
+			CollectFields(ctx, "Installation").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case module.Table:
 		nodes, err := c.Module.Query().
 			Where(module.IDIn(ids...)).
@@ -312,6 +592,32 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		nodes, err := c.ModuleVersion.Query().
 			Where(moduleversion.IDIn(ids...)).
 			CollectFields(ctx, "ModuleVersion").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case namespace.Table:
+		nodes, err := c.Namespace.Query().
+			Where(namespace.IDIn(ids...)).
+			CollectFields(ctx, "Namespace").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case user.Table:
+		nodes, err := c.User.Query().
+			Where(user.IDIn(ids...)).
+			CollectFields(ctx, "User").
 			All(ctx)
 		if err != nil {
 			return nil, err

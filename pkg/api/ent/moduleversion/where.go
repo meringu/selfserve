@@ -93,246 +93,10 @@ func IDLTE(id int) predicate.ModuleVersion {
 	})
 }
 
-// Version applies equality check predicate on the "version" field. It's identical to VersionEQ.
-func Version(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldVersion), v))
-	})
-}
-
-// Source applies equality check predicate on the "source" field. It's identical to SourceEQ.
-func Source(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSource), v))
-	})
-}
-
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.ModuleVersion {
 	return predicate.ModuleVersion(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldCreatedAt), v))
-	})
-}
-
-// VersionEQ applies the EQ predicate on the "version" field.
-func VersionEQ(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldVersion), v))
-	})
-}
-
-// VersionNEQ applies the NEQ predicate on the "version" field.
-func VersionNEQ(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldVersion), v))
-	})
-}
-
-// VersionIn applies the In predicate on the "version" field.
-func VersionIn(vs ...string) predicate.ModuleVersion {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldVersion), v...))
-	})
-}
-
-// VersionNotIn applies the NotIn predicate on the "version" field.
-func VersionNotIn(vs ...string) predicate.ModuleVersion {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldVersion), v...))
-	})
-}
-
-// VersionGT applies the GT predicate on the "version" field.
-func VersionGT(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldVersion), v))
-	})
-}
-
-// VersionGTE applies the GTE predicate on the "version" field.
-func VersionGTE(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldVersion), v))
-	})
-}
-
-// VersionLT applies the LT predicate on the "version" field.
-func VersionLT(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldVersion), v))
-	})
-}
-
-// VersionLTE applies the LTE predicate on the "version" field.
-func VersionLTE(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldVersion), v))
-	})
-}
-
-// VersionContains applies the Contains predicate on the "version" field.
-func VersionContains(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldVersion), v))
-	})
-}
-
-// VersionHasPrefix applies the HasPrefix predicate on the "version" field.
-func VersionHasPrefix(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldVersion), v))
-	})
-}
-
-// VersionHasSuffix applies the HasSuffix predicate on the "version" field.
-func VersionHasSuffix(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldVersion), v))
-	})
-}
-
-// VersionEqualFold applies the EqualFold predicate on the "version" field.
-func VersionEqualFold(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldVersion), v))
-	})
-}
-
-// VersionContainsFold applies the ContainsFold predicate on the "version" field.
-func VersionContainsFold(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldVersion), v))
-	})
-}
-
-// SourceEQ applies the EQ predicate on the "source" field.
-func SourceEQ(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSource), v))
-	})
-}
-
-// SourceNEQ applies the NEQ predicate on the "source" field.
-func SourceNEQ(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSource), v))
-	})
-}
-
-// SourceIn applies the In predicate on the "source" field.
-func SourceIn(vs ...string) predicate.ModuleVersion {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.In(s.C(FieldSource), v...))
-	})
-}
-
-// SourceNotIn applies the NotIn predicate on the "source" field.
-func SourceNotIn(vs ...string) predicate.ModuleVersion {
-	v := make([]interface{}, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		// if not arguments were provided, append the FALSE constants,
-		// since we can't apply "IN ()". This will make this predicate falsy.
-		if len(v) == 0 {
-			s.Where(sql.False())
-			return
-		}
-		s.Where(sql.NotIn(s.C(FieldSource), v...))
-	})
-}
-
-// SourceGT applies the GT predicate on the "source" field.
-func SourceGT(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSource), v))
-	})
-}
-
-// SourceGTE applies the GTE predicate on the "source" field.
-func SourceGTE(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSource), v))
-	})
-}
-
-// SourceLT applies the LT predicate on the "source" field.
-func SourceLT(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSource), v))
-	})
-}
-
-// SourceLTE applies the LTE predicate on the "source" field.
-func SourceLTE(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSource), v))
-	})
-}
-
-// SourceContains applies the Contains predicate on the "source" field.
-func SourceContains(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSource), v))
-	})
-}
-
-// SourceHasPrefix applies the HasPrefix predicate on the "source" field.
-func SourceHasPrefix(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSource), v))
-	})
-}
-
-// SourceHasSuffix applies the HasSuffix predicate on the "source" field.
-func SourceHasSuffix(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSource), v))
-	})
-}
-
-// SourceEqualFold applies the EqualFold predicate on the "source" field.
-func SourceEqualFold(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSource), v))
-	})
-}
-
-// SourceContainsFold applies the ContainsFold predicate on the "source" field.
-func SourceContainsFold(v string) predicate.ModuleVersion {
-	return predicate.ModuleVersion(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSource), v))
 	})
 }
 
@@ -431,6 +195,34 @@ func HasModuleWith(preds ...predicate.Module) predicate.ModuleVersion {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ModuleInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, ModuleTable, ModuleColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasInstallations applies the HasEdge predicate on the "installations" edge.
+func HasInstallations() predicate.ModuleVersion {
+	return predicate.ModuleVersion(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InstallationsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InstallationsTable, InstallationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasInstallationsWith applies the HasEdge predicate on the "installations" edge with a given conditions (other predicates).
+func HasInstallationsWith(preds ...predicate.Installation) predicate.ModuleVersion {
+	return predicate.ModuleVersion(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(InstallationsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, InstallationsTable, InstallationsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/meringu/selfserve/pkg/api/ent/module"
 	"github.com/meringu/selfserve/pkg/api/ent/moduleversion"
+	"github.com/meringu/selfserve/pkg/api/ent/namespace"
 	"github.com/meringu/selfserve/pkg/api/ent/predicate"
 )
 
@@ -39,6 +40,25 @@ func (mu *ModuleUpdate) SetDescription(s string) *ModuleUpdate {
 	return mu
 }
 
+// SetNamespaceID sets the "namespace" edge to the Namespace entity by ID.
+func (mu *ModuleUpdate) SetNamespaceID(id int) *ModuleUpdate {
+	mu.mutation.SetNamespaceID(id)
+	return mu
+}
+
+// SetNillableNamespaceID sets the "namespace" edge to the Namespace entity by ID if the given value is not nil.
+func (mu *ModuleUpdate) SetNillableNamespaceID(id *int) *ModuleUpdate {
+	if id != nil {
+		mu = mu.SetNamespaceID(*id)
+	}
+	return mu
+}
+
+// SetNamespace sets the "namespace" edge to the Namespace entity.
+func (mu *ModuleUpdate) SetNamespace(n *Namespace) *ModuleUpdate {
+	return mu.SetNamespaceID(n.ID)
+}
+
 // AddVersionIDs adds the "versions" edge to the ModuleVersion entity by IDs.
 func (mu *ModuleUpdate) AddVersionIDs(ids ...int) *ModuleUpdate {
 	mu.mutation.AddVersionIDs(ids...)
@@ -57,6 +77,12 @@ func (mu *ModuleUpdate) AddVersions(m ...*ModuleVersion) *ModuleUpdate {
 // Mutation returns the ModuleMutation object of the builder.
 func (mu *ModuleUpdate) Mutation() *ModuleMutation {
 	return mu.mutation
+}
+
+// ClearNamespace clears the "namespace" edge to the Namespace entity.
+func (mu *ModuleUpdate) ClearNamespace() *ModuleUpdate {
+	mu.mutation.ClearNamespace()
+	return mu
 }
 
 // ClearVersions clears all "versions" edges to the ModuleVersion entity.
@@ -166,6 +192,41 @@ func (mu *ModuleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: module.FieldDescription,
 		})
 	}
+	if mu.mutation.NamespaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   module.NamespaceTable,
+			Columns: []string{module.NamespaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: namespace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.NamespaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   module.NamespaceTable,
+			Columns: []string{module.NamespaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: namespace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if mu.mutation.VersionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -251,6 +312,25 @@ func (muo *ModuleUpdateOne) SetDescription(s string) *ModuleUpdateOne {
 	return muo
 }
 
+// SetNamespaceID sets the "namespace" edge to the Namespace entity by ID.
+func (muo *ModuleUpdateOne) SetNamespaceID(id int) *ModuleUpdateOne {
+	muo.mutation.SetNamespaceID(id)
+	return muo
+}
+
+// SetNillableNamespaceID sets the "namespace" edge to the Namespace entity by ID if the given value is not nil.
+func (muo *ModuleUpdateOne) SetNillableNamespaceID(id *int) *ModuleUpdateOne {
+	if id != nil {
+		muo = muo.SetNamespaceID(*id)
+	}
+	return muo
+}
+
+// SetNamespace sets the "namespace" edge to the Namespace entity.
+func (muo *ModuleUpdateOne) SetNamespace(n *Namespace) *ModuleUpdateOne {
+	return muo.SetNamespaceID(n.ID)
+}
+
 // AddVersionIDs adds the "versions" edge to the ModuleVersion entity by IDs.
 func (muo *ModuleUpdateOne) AddVersionIDs(ids ...int) *ModuleUpdateOne {
 	muo.mutation.AddVersionIDs(ids...)
@@ -269,6 +349,12 @@ func (muo *ModuleUpdateOne) AddVersions(m ...*ModuleVersion) *ModuleUpdateOne {
 // Mutation returns the ModuleMutation object of the builder.
 func (muo *ModuleUpdateOne) Mutation() *ModuleMutation {
 	return muo.mutation
+}
+
+// ClearNamespace clears the "namespace" edge to the Namespace entity.
+func (muo *ModuleUpdateOne) ClearNamespace() *ModuleUpdateOne {
+	muo.mutation.ClearNamespace()
+	return muo
 }
 
 // ClearVersions clears all "versions" edges to the ModuleVersion entity.
@@ -401,6 +487,41 @@ func (muo *ModuleUpdateOne) sqlSave(ctx context.Context) (_node *Module, err err
 			Value:  value,
 			Column: module.FieldDescription,
 		})
+	}
+	if muo.mutation.NamespaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   module.NamespaceTable,
+			Columns: []string{module.NamespaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: namespace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.NamespaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   module.NamespaceTable,
+			Columns: []string{module.NamespaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: namespace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if muo.mutation.VersionsCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -36,6 +36,9 @@ func (Module) Fields() []ent.Field {
 // Edges of the Module.
 func (Module) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("namespace", Namespace.Type).
+			Ref("modules").
+			Unique(),
 		edge.To("versions", ModuleVersion.Type),
 	}
 }
